@@ -5,6 +5,8 @@ interface InteractionPromptProps {
   celebrating: boolean;
   /** "stage": large type sized to the viewport for TV / desktop overlays. "compact": phones. */
   size?: "stage" | "compact";
+  /** A wrist wearable is connected; without one, the prompt points at the on-screen Wave button. */
+  wearable: boolean;
 }
 
 const TITLE: Record<"ready" | "wave" | "celebrate", { stage: string; compact: string; tone: string }> = {
@@ -26,14 +28,18 @@ const TITLE: Record<"ready" | "wave" | "celebrate", { stage: string; compact: st
 };
 
 /** The invitation to move: "Get ready", then "Wave with the music", then a short acknowledgement. */
-export default function InteractionPrompt({ phase, celebrating, size = "compact" }: InteractionPromptProps) {
+export default function InteractionPrompt({ phase, celebrating, size = "compact", wearable }: InteractionPromptProps) {
   let content: { key: "ready" | "wave" | "celebrate"; title: string; detail: string } | null = null;
   if (celebrating) {
     content = { key: "celebrate", title: "You moved with the music.", detail: "" };
   } else if (phase === "get-ready") {
     content = { key: "ready", title: "Get ready", detail: "The moment is coming." };
   } else if (phase === "wave") {
-    content = { key: "wave", title: "Wave with the music", detail: "Move your wrist to the beat." };
+    content = {
+      key: "wave",
+      title: "Wave with the music",
+      detail: wearable ? "Move your wrist to the beat." : "Tap the Wave button on the beat.",
+    };
   }
 
   return (

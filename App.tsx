@@ -10,6 +10,7 @@ import { HomePortal } from './components/HomePortal';
 import { HaloDetailModal } from './components/HaloDetailModal';
 import { TavyCompanionApp } from './components/TavyCompanionApp';
 import { ExperienceSelect } from './components/experience/ExperienceSelect';
+import { ConcertErrorBoundary } from './components/experience/ConcertErrorBoundary';
 import { useAppView } from './hooks/useAppView';
 
 // The concert modes (ported from AuraBeat) load on demand so the landing page stays light.
@@ -44,17 +45,21 @@ const AppContent: React.FC = () => {
 
   if (view === 'live-venue') {
     return (
-      <Suspense fallback={concertFallback}>
-        <LiveConcert onExit={() => navigate('experience')} onSwitchMode={() => navigate('at-home')} />
-      </Suspense>
+      <ConcertErrorBoundary key={view} onBack={() => navigate('experience')}>
+        <Suspense fallback={concertFallback}>
+          <LiveConcert onExit={() => navigate('experience')} onSwitchMode={() => navigate('at-home')} />
+        </Suspense>
+      </ConcertErrorBoundary>
     );
   }
 
   if (view === 'at-home') {
     return (
-      <Suspense fallback={concertFallback}>
-        <AtHomeConcert onExit={() => navigate('experience')} onSwitchMode={() => navigate('live-venue')} />
-      </Suspense>
+      <ConcertErrorBoundary key={view} onBack={() => navigate('experience')}>
+        <Suspense fallback={concertFallback}>
+          <AtHomeConcert onExit={() => navigate('experience')} onSwitchMode={() => navigate('live-venue')} />
+        </Suspense>
+      </ConcertErrorBoundary>
     );
   }
 
