@@ -1,3 +1,5 @@
+import { useEffect, useRef } from "react";
+
 interface ScreenHeaderProps {
   label: string;
   onExit: () => void;
@@ -5,8 +7,17 @@ interface ScreenHeaderProps {
   switchTo?: { label: string; onSelect: () => void };
 }
 
-/** Top bar shared by the concert screens: brand, mode label, mode switch, and an always-visible exit. */
+/**
+ * Top bar shared by the concert screens: brand, mode label, mode switch, and an always-visible exit.
+ * Focus moves to the heading once on mount, so keyboard and screen-reader users land on the new page.
+ */
 export default function ScreenHeader({ label, onExit, switchTo }: ScreenHeaderProps) {
+  const headingRef = useRef<HTMLHeadingElement>(null);
+
+  useEffect(() => {
+    headingRef.current?.focus();
+  }, []);
+
   return (
     <header className="flex flex-wrap items-center justify-between gap-3">
       <div>
@@ -16,7 +27,9 @@ export default function ScreenHeader({ label, onExit, switchTo }: ScreenHeaderPr
             Simulated demo
           </span>
         </p>
-        <h1 className="mt-1 font-display text-lg font-bold tracking-wide uppercase">{label}</h1>
+        <h1 ref={headingRef} tabIndex={-1} className="mt-1 font-display text-lg font-bold tracking-wide uppercase">
+          {label}
+        </h1>
       </div>
       <div className="flex items-center gap-2">
         {switchTo && (

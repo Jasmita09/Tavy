@@ -34,6 +34,10 @@ html[data-contrast="high"] .concert-root [class*="border-white/"] {
   outline: 3px solid var(--color-aura);
   outline-offset: 3px;
 }
+/* Headings take focus only programmatically, after navigation; they aren't controls, so no ring. */
+.concert-root h1[tabindex="-1"]:focus-visible {
+  outline: none;
+}
 
 /* Reduced motion: the OS preference, plus the in-app Reduce Motion toggle (data-reduced-motion on <html>) */
 @media (prefers-reduced-motion: reduce) {

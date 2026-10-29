@@ -130,7 +130,7 @@ export const ExperienceSelect: React.FC<ExperienceSelectProps> = ({
         </button>
       </div>
 
-      <p className="mt-8 text-xs text-stone-500 leading-relaxed max-w-3xl">
+      <p className="mt-8 text-xs text-stone-400 leading-relaxed max-w-3xl">
         This is a product demo. Halo hardware, Bluetooth connections, crowd and sound-level data, and safety
         features are simulated and do not connect to real devices or emergency services.
       </p>
