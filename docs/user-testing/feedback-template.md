@@ -11,7 +11,7 @@ Fill in one form for each participant. Save it as `session-<ID>.md` next to this
 | Device (model) | |
 | OS + version | |
 | Browser + version | |
-| URL / build tested | deployed / local preview — commit `_______` |
+| URL / build tested | `https://____________:4443/Tavy/`, SHA from `BUILD_SHA.txt`: `_______` |
 | Assistive tech in use | none / VoiceOver / TalkBack / keyboard / Switch Control / OS Reduce Motion / other: |
 | Concert experience before? | never / at-home only / live only / both |
 

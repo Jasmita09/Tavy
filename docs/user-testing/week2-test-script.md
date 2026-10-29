@@ -6,7 +6,8 @@
 ## Before the session
 
 - **Device:** the participant's own phone if possible. Record the model, OS version and browser.
-- **URL:** the deployed site (`https://jasmita09.github.io/Tavy/`) or the local preview (see "Running a session" below).
+- **URL:** the HTTPS LAN build of the tested commit (see "Running a session" below). Don't use the deployed site: it serves `main`, which doesn't have the Week 2 fixes.
+- **Build check:** open `/Tavy/BUILD_SHA.txt` and write the SHA on the feedback form.
 - Turn the phone's sound on and set the volume to a medium level. Make sure the phone is not in silent mode.
 - Clear the site's data before each session. Settings are saved on the device, so the previous participant's choices would otherwise carry over.
 - Tell the participant:
@@ -67,19 +68,12 @@
 
 ## Running a session
 
-**Deployed:** open `https://jasmita09.github.io/Tavy/#/experience` to skip straight to Task 2. Use the root URL for Task 1.
+1. Start the exact test build over HTTPS. The commands are in [week2-readiness-report.md → Launching the exact build](./week2-readiness-report.md#launching-the-exact-build).
+2. Put the phone on the same Wi-Fi as the Mac and open `https://<Mac LAN IP>:4443/Tavy/`.
+3. Accept the self-signed certificate warning once, before the participant arrives.
+4. Start Task 1 at `/Tavy/`.
 
-**Local, phone on the same Wi-Fi:**
-
-```bash
-npm install
-npm run build
-npx vite preview --host --port 4173
-```
-
-Then open the "Network" URL that Vite prints, for example `http://192.168.x.x:4173/Tavy/`.
-
-> **Important:** a plain `http://` LAN address is not a secure context. Some features may be blocked on phones over a LAN address, so use the deployed HTTPS URL for real sessions. Vibration works only in Android browsers; iPhone browsers don't support it.
+> HTTPS matters: phones treat a plain `http://` LAN address as insecure and may block some browser features. Vibration works only in Android browsers; iPhone browsers don't support it.
 
 ## Accessibility sessions (optional, one participant each)
 

@@ -17,20 +17,20 @@ Nothing below has been tested on a physical iPhone or Android phone, or with Voi
 
 ## Fixed on this branch
 
-Each fix addresses a crash or an accessibility blocker that was reproduced before the fix and verified after it.
+Each problem was reproduced before the fix and verified after it. FIX-01 to FIX-03 are a crash and two accessibility blockers. UX-01 and UX-02 are quick accessibility wins, landed before the screen-reader sessions.
 
 | ID | Problem | Evidence (before → after) | Fix |
 |---|---|---|---|
 | **FIX-01** | At-home Concert showed a **blank screen** on Chrome < 97 and iOS/macOS Safari < 15.4. `Array.prototype.findLastIndex` threw an error during render. Vite's default build target (Chrome 87 / Safari 14) does not polyfill it, and there is no error boundary to catch the failure. | Chrome 92: `TypeError: t.sections.findLastIndex is not a function`, with no `h1` and no `<video>` rendered → page renders, video present, no errors. The new `intensityAt` gives identical output to the old one across 20,501 time samples. | Replaced with a loop in `aurabeat/lib/beat.ts`. Also replaced `Object.hasOwn` in `aurabeat/live/liveBridge.ts`, which needs the same browser versions. That second path only runs with a real backend, so the change is preventive. |
 | **FIX-02** | With the full-screen lightstick open and **no element full screen available** (iPhone Safari), Tab moved focus onto the **hidden** At-home and Exit buttons behind the overlay. Keyboard and Switch Control users lost track of where focus was, and could trigger a mode switch they couldn't see. | Full screen disabled: Tab sequence `Stop → [browser] → At-home → Exit` (outside the dialog) → `Stop → [browser] → Exit lightstick → Stop` (stays inside). | The page content is now `inert` while the lightstick is open (`aurabeat/pages/LiveConcert.tsx`), and the lightstick moved out of that container. |
+| **UX-01** | When the user entered Live or At-home, **focus landed on `<body>`**, so screen-reader users got no confirmation that the page changed. | Focus was on `BODY` → focus is on `H1 Live Concert` / `H1 At-home Concert` after navigation and after a mode switch. Focus stays on the control the user operated during ordinary interactions (toggles, Wave, Exit lightstick). | `ScreenHeader` focuses its `h1` (`tabIndex=-1`) once on mount. `index.css` hides the focus ring on such headings, because they aren't controls. |
+| **UX-02** | The simulated-demo/safety disclaimer had about **4.1:1** contrast, below WCAG AA (4.5:1). | axe `color-contrast`: 1 serious violation → 0. | Changed `text-stone-500` to `text-stone-400` in `ExperienceSelect`. |
 | **FIX-03** | Screen readers were sent **"BASS, Heavy low end" every 2 seconds** for as long as live mode ran. With the lightstick open, the message went out from **two** live regions at once, so it was announced twice. This made the screen impractical to use with a screen reader while a show was running. | 2 live regions, with "BASS" re-written into them every 2 s → 1 live region, which announces only section changes (BUILD / CHORUS / DROP, about every 8 s). | `LiveCueDisplay` now has an `announce` prop and a single screen-reader-only live region that skips BASS. The visible cue words are unchanged. |
 
 ## Open issues (not fixed, prioritized)
 
 | ID | Priority | Evidence | Issue | Recommended fix |
 |---|---|---|---|---|
-| **UX-01** | High | Reproduced | When the user enters Live or At-home, **focus lands on `<body>`**. The selection screen moves focus to its `h1`, but the concert pages don't, so screen-reader users get no confirmation that the page changed. | In `ScreenHeader`, give the `h1` `tabIndex={-1}` and focus it on mount, the same way `ExperienceShell` does. |
-| **UX-02** | High | Reproduced (axe `color-contrast`, serious) | The demo/safety disclaimer on the selection screen (`text-stone-500`, 12 px) has about **4.1:1** contrast. WCAG AA requires 4.5:1. This text is the notice that safety features aren't real. | Change it to `text-stone-400`. This is a one-line change. |
 | **UX-03** | High | Code review | The first Wave moment starts at **1:16**. A phone user who presses Play sees "Wave moments light up during the hooks" and nothing else to do for 76 s. There is a risk they give up before the core interaction. | Measure this in Task 4 (time and assists). If confirmed, show "First wave at 1:16" with a jump-to button, or a countdown. |
 | **UX-04** | High | Code review | On phones the prompt says **"Wave with the music. Move your wrist to the beat."** No wearable is connected, so wrist movement does nothing. Only tapping counts. Participants may shake the phone, fail, and conclude the feature is broken. | When no wearable is connected, change the prompt to "Tap the Wave button on the beat". Validate in Task 4. |
 | **UX-05** | Medium | Code review | Live mode has three ways to leave: "Exit" (header), "Exit lightstick", and "Stop". Users may not understand that "Exit lightstick" keeps the show running. | Observe in Task 2. Possible fix: rename to "Back to controls (show keeps running)". |
@@ -71,4 +71,43 @@ Each fix addresses a crash or an accessibility blocker that was reproduced befor
 
 ## Ready for user testing?
 
-**Yes, with conditions.** The crash and the two accessibility blockers are fixed. UX-01 and UX-02 are quick wins worth landing before the screen-reader sessions. UX-03, UX-04 and UX-05 are the main hypotheses the five tasks are designed to test. Use the test script and the feedback template in this folder.
+**Yes.** The crash, the two accessibility blockers, UX-01 and UX-02 are fixed. UX-03, UX-04 and UX-05 are left in place on purpose. They are the main hypotheses the five tasks are designed to test. Use the test script and the feedback template in this folder.
+
+## Test build
+
+| | |
+|---|---|
+| **Tested commit** | `6910c7bbc05e378dd824893a37305685e1248b26` (`6910c7b`). Any later commits on this branch change only `docs/`. Check with `git diff --stat 6910c7b HEAD -- . ':!docs'`, which should print nothing. |
+| **Build check** | The served build's `/Tavy/BUILD_SHA.txt` returns `6910c7b`. |
+| **Five-task walkthrough** | 26/26 automated checks passed against `https://<LAN-IP>:4443/Tavy/`: all five tasks, UX-01, UX-02, FIX-01 to FIX-03, 0 failed requests and 0 console errors. Chrome 131 at a 390×844 touch viewport. |
+| **Not the deployed site** | `https://jasmita09.github.io/Tavy/` still serves `main` (`e107f53`), which has **none** of the Week 2 fixes. Don't use it for these sessions. |
+
+### Launching the exact build
+
+These steps assume a Mac, with the phone on the same Wi-Fi network.
+
+```bash
+SHA=6910c7b
+DIR=/tmp/tavy-$SHA
+rm -rf "$DIR" && mkdir -p "$DIR"
+git -C ~/Downloads/Tavy-main archive "$SHA" | tar -x -C "$DIR"
+ln -s ~/Downloads/Tavy-main/node_modules "$DIR/node_modules"
+(cd "$DIR" && npx vite build && echo "$SHA" > dist/BUILD_SHA.txt)
+
+# self-signed HTTPS certificate for this Mac's LAN IP (valid for 14 days)
+IP=$(ipconfig getifaddr en0)
+openssl req -x509 -newkey rsa:2048 -nodes -days 14 -subj "/CN=TAVY test" \
+  -addext "subjectAltName=IP:$IP,DNS:localhost" -keyout "$DIR/key.pem" -out "$DIR/cert.pem"
+cat > "$DIR/https.config.mjs" <<EOF
+import fs from "node:fs";
+export default { base: "/Tavy/", preview: { host: true, port: 4443, strictPort: true,
+  https: { key: fs.readFileSync("$DIR/key.pem"), cert: fs.readFileSync("$DIR/cert.pem") } } };
+EOF
+(cd "$DIR" && npx vite preview --config https.config.mjs)
+```
+
+- Open `https://<IP>:4443/Tavy/` on the phone and accept the certificate warning once.
+  - Chrome: **Advanced → Proceed**.
+  - Safari: **Show Details → visit this website**.
+- Before each participant, open `https://<IP>:4443/Tavy/BUILD_SHA.txt` and check that it shows the tested SHA.
+- `git archive` builds the committed tree, so uncommitted edits in the working copy can't leak into the test build.
