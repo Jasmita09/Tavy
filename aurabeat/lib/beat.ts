@@ -45,7 +45,9 @@ export function formatTime(seconds: number): string {
  * Section intensity at `time`. "Rising" sections ramp smoothly toward the next section's intensity.
  */
 export function intensityAt(track: Track, time: number): number {
-  const index = track.sections.findLastIndex((s) => s.start <= time);
+  // A loop rather than findLastIndex, which Safari < 15.4 and Chrome < 97 lack (the build doesn't polyfill).
+  let index = -1;
+  while (index + 1 < track.sections.length && track.sections[index + 1].start <= time) index++;
   const section = track.sections[Math.max(0, index)];
   const next = track.sections[index + 1];
   if (section.mood !== "rising" || !next) return section.intensity;

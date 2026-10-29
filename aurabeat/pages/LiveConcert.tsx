@@ -65,9 +65,13 @@ export default function LiveConcert({ onExit, onSwitchMode }: LiveConcertProps) 
     settings.watchHaptics ? "Haptics on" : "Haptics off",
   ].join(" · ");
 
+  const showLightstick = lightstickOpen && session.active;
+
   return (
     <div className="concert-root min-h-dvh overflow-x-clip bg-stage text-ink">
-      <div className="mx-auto flex min-h-dvh w-full max-w-xl flex-col px-5 py-6 sm:px-8">
+      {/* Inert under the full-screen lightstick: without element full screen (iPhone), Tab would
+          otherwise land on controls hidden behind it. */}
+      <div inert={showLightstick} className="mx-auto flex min-h-dvh w-full max-w-xl flex-col px-5 py-6 sm:px-8">
         <ScreenHeader label="Live Concert" onExit={exit} switchTo={{ label: "At-home", onSelect: switchMode }} />
 
         <p className="mt-6 text-lg text-ink-muted">Keep your eyes on the stage. TΛVY stays in your pocket.</p>
@@ -112,7 +116,13 @@ export default function LiveConcert({ onExit, onSwitchMode }: LiveConcertProps) 
           <LiveStatusPanel connection={connection} watch={watch} />
 
           {settings.cues && session.active && (
-            <LiveCueDisplay cue={session.lastCue} beats={session.beats} variant="card" reducedMotion={reducedMotion} />
+            <LiveCueDisplay
+              cue={session.lastCue}
+              beats={session.beats}
+              variant="card"
+              reducedMotion={reducedMotion}
+              announce={!showLightstick}
+            />
           )}
 
           <section aria-label="Live settings" className="rounded-3xl border border-white/10 bg-surface p-3">
@@ -156,24 +166,24 @@ export default function LiveConcert({ onExit, onSwitchMode }: LiveConcertProps) 
             />
           </section>
         </div>
-
-        {lightstickOpen && session.active && (
-          <LiveLightstickView
-            mode={session.mode}
-            tone={session.tone}
-            flash={session.flash}
-            reducedMotion={reducedMotion}
-            status={statusLine}
-            cue={
-              settings.cues ? (
-                <LiveCueDisplay cue={session.lastCue} beats={session.beats} variant="stage" reducedMotion={reducedMotion} />
-              ) : undefined
-            }
-            onExit={closeLightstick}
-            onStop={stop}
-          />
-        )}
       </div>
+
+      {showLightstick && (
+        <LiveLightstickView
+          mode={session.mode}
+          tone={session.tone}
+          flash={session.flash}
+          reducedMotion={reducedMotion}
+          status={statusLine}
+          cue={
+            settings.cues ? (
+              <LiveCueDisplay cue={session.lastCue} beats={session.beats} variant="stage" reducedMotion={reducedMotion} announce />
+            ) : undefined
+          }
+          onExit={closeLightstick}
+          onStop={stop}
+        />
+      )}
     </div>
   );
 }
