@@ -64,7 +64,7 @@ export const LiveVenue: React.FC<LiveVenueProps> = ({
   const [flashAssistActive, setFlashAssistActive] = useState(false);
   const [customInput, setCustomInput] = useState('');
   const [isExpandedBigText, setIsExpandedBigText] = useState(false);
-  const [bigTextColorMode, setBigTextColorMode] = useState<'yellow' | 'white' | 'red' | 'cyan'>('yellow');
+  const [bigTextColorMode, setBigTextColorMode] = useState<'yellow' | 'white' | 'red' | 'cyan' | 'black'>('yellow');
 
   // Panel 3: Hearing Health Guard
   const [dbLevel, setDbLevel] = useState(106);

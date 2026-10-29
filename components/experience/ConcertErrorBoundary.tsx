@@ -3,6 +3,9 @@ import { FOCUS_RING } from './ExperienceShell';
 
 interface ConcertErrorBoundaryProps {
   onBack: () => void;
+  /** Defaults suit the concert modes; other lazy pages pass their own wording. */
+  title?: string;
+  backLabel?: string;
   children: React.ReactNode;
 }
 
@@ -39,7 +42,7 @@ export class ConcertErrorBoundary extends React.Component<ConcertErrorBoundaryPr
       <main className="min-h-screen bg-[#090a0f] text-white flex items-center justify-center px-4">
         <div className="max-w-md text-center space-y-4">
           <h1 ref={this.headingRef} tabIndex={-1} className="text-2xl font-bold focus:outline-none">
-            This concert couldn't load
+            {this.props.title ?? "This concert couldn't load"}
           </h1>
           <p className="text-stone-300">
             Something went wrong on our side. Check your connection, then try again or pick another mode.
@@ -49,7 +52,7 @@ export class ConcertErrorBoundary extends React.Component<ConcertErrorBoundaryPr
               onClick={this.props.onBack}
               className={`min-h-12 px-5 rounded-full bg-amber-400 text-stone-950 font-semibold cursor-pointer ${FOCUS_RING}`}
             >
-              Back to experience selection
+              {this.props.backLabel ?? 'Back to experience selection'}
             </button>
             <button
               onClick={() => window.location.reload()}

@@ -35,6 +35,7 @@ interface HomePortalProps {
   onOpenDownloadApp: () => void;
   onOpenArchitecture: () => void;
   onEnterExperience: () => void;
+  onOpenHaloShowcase: () => void;
 }
 
 interface HotspotPin {
@@ -49,7 +50,8 @@ interface HotspotPin {
 export const HomePortal: React.FC<HomePortalProps> = ({ 
   onOpenDownloadApp,
   onOpenArchitecture,
-  onEnterExperience
+  onEnterExperience,
+  onOpenHaloShowcase
 }) => {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [activeHotspot, setActiveHotspot] = useState<string | null>(null);
@@ -202,6 +204,17 @@ export const HomePortal: React.FC<HomePortalProps> = ({
             >
               <Smartphone className="w-4 h-4 text-amber-300" />
               <span>Get Companion App</span>
+            </button>
+          </motion.div>
+
+          {/* Product exploration, kept separate from the concert entry */}
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.7, delay: 0.5 }}>
+            <button
+              onClick={onOpenHaloShowcase}
+              className="inline-flex min-h-11 items-center gap-2 rounded-full px-4 text-sm font-medium text-white/90 hover:text-white underline-offset-4 hover:underline cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+            >
+              <Sparkles className="w-4 h-4 text-violet-200" aria-hidden="true" />
+              Explore the Halo concept in 3D
             </button>
           </motion.div>
         </div>

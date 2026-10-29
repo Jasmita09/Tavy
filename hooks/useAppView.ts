@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
  * `/Tavy/` base path without server rewrites, and the browser back button
  * moves between views.
  */
-export type AppView = 'website' | 'companion-app' | 'experience' | 'live-venue' | 'at-home';
+export type AppView = 'website' | 'companion-app' | 'experience' | 'live-venue' | 'at-home' | 'halo';
 
 const VIEW_HASHES: Record<AppView, string> = {
   website: '',
@@ -13,6 +13,7 @@ const VIEW_HASHES: Record<AppView, string> = {
   experience: '#/experience',
   'live-venue': '#/experience/live',
   'at-home': '#/experience/home',
+  halo: '#/halo',
 };
 
 const viewFromHash = (hash: string): AppView =>

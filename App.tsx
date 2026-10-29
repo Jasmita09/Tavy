@@ -16,6 +16,8 @@ import { useAppView } from './hooks/useAppView';
 // The concert modes (ported from AuraBeat) load on demand so the landing page stays light.
 const LiveConcert = lazy(() => import('./aurabeat/pages/LiveConcert'));
 const AtHomeConcert = lazy(() => import('./aurabeat/pages/AtHomeConcert'));
+// The Halo 3D showcase (and three.js with it) also loads only when opened.
+const HaloShowcase = lazy(() => import('./components/halo/HaloShowcase'));
 const concertFallback = <div className="min-h-screen bg-[#090a0f]" />;
 
 const AppContent: React.FC = () => {
@@ -39,7 +41,23 @@ const AppContent: React.FC = () => {
         onSelectAtHome={() => navigate('at-home')}
         onOpenCompanionApp={() => navigate('companion-app')}
         onBackToWebsite={() => navigate('website')}
+        onOpenHaloShowcase={() => navigate('halo')}
       />
+    );
+  }
+
+  if (view === 'halo') {
+    return (
+      <ConcertErrorBoundary
+        key={view}
+        onBack={() => navigate('website')}
+        title="The Halo showcase couldn't load"
+        backLabel="Back to TΛVY Website"
+      >
+        <Suspense fallback={concertFallback}>
+          <HaloShowcase onBack={() => navigate('website')} onEnterExperience={() => navigate('experience')} />
+        </Suspense>
+      </ConcertErrorBoundary>
     );
   }
 
@@ -94,6 +112,7 @@ const AppContent: React.FC = () => {
           onOpenDownloadApp={() => navigate('companion-app')}
           onOpenArchitecture={() => setIsArchitectureModalOpen(true)}
           onEnterExperience={() => navigate('experience')}
+          onOpenHaloShowcase={() => navigate('halo')}
         />
       </main>
 
