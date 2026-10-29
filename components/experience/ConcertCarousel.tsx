@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
-import { FOCUS_RING } from './ExperienceShell';
+import { FOCUS_LIGHT } from '../ui/tokens';
+import { buttonClass } from '../ui/Button';
 import { useReducedMotionPreference } from '../../hooks/useReducedMotionPreference';
 
 export interface ConcertMode {
@@ -19,6 +20,8 @@ export interface ConcertMode {
 
 interface ConcertCarouselProps {
   modes: ConcertMode[];
+  /** Heading level for card titles, so it follows the page outline (h2 under an h1, h3 under a section h2). */
+  titleAs?: 'h2' | 'h3';
 }
 
 /** Drag distance (as a share of the card spacing) that commits to the next card. */
@@ -33,7 +36,7 @@ const SceneLayer: React.FC<{ scene: ConcertMode['scene'] }> = ({ scene }) =>
       {[-28, 0, 28].map((angle, i) => (
         <span
           key={angle}
-          className="absolute -top-10 left-1/2 h-[140%] w-24 origin-top opacity-50 transition-opacity duration-500 group-hover:opacity-80 motion-reduce:transition-none"
+          className="absolute -top-10 left-1/2 h-[140%] w-24 origin-top opacity-30 transition-opacity duration-500 group-hover:opacity-50 motion-reduce:transition-none"
           style={{
             transform: `translateX(-50%) rotate(${angle}deg)`,
             background: `linear-gradient(to bottom, ${['rgba(139,92,246,0.55)', 'rgba(96,165,250,0.5)', 'rgba(139,92,246,0.55)'][i]}, transparent 70%)`,
@@ -44,17 +47,17 @@ const SceneLayer: React.FC<{ scene: ConcertMode['scene'] }> = ({ scene }) =>
       {/* Crowd lightsticks along the bottom */}
       <div className="absolute inset-x-6 bottom-5 flex justify-between">
         {Array.from({ length: 14 }, (_, i) => (
-          <span key={i} className="size-1.5 rounded-full bg-amber-300 shadow-[0_0_8px_2px_rgba(251,191,36,0.6)]" style={{ opacity: 0.45 + (i % 3) * 0.2 }} />
+          <span key={i} className="size-1.5 rounded-full bg-tv-peach" style={{ opacity: 0.5 + (i % 3) * 0.2 }} />
         ))}
       </div>
     </div>
   ) : (
     <div aria-hidden="true" className="absolute inset-0">
       {/* A screen glowing in a dark room, with synced lyric lines */}
-      <div className="absolute inset-[12%] rounded-2xl border border-sky-300/30 shadow-[0_0_60px_-10px_rgba(96,165,250,0.6)] transition-shadow duration-500 group-hover:shadow-[0_0_80px_-6px_rgba(96,165,250,0.75)] motion-reduce:transition-none" />
+      <div className="absolute inset-[12%] rounded-2xl border border-white/40 transition-colors duration-500 group-hover:border-white/70 motion-reduce:transition-none" />
       <div className="absolute inset-x-[24%] bottom-[18%] space-y-1.5">
         <span className="block h-1.5 rounded-full bg-white/70" />
-        <span className="mx-auto block h-1.5 w-2/3 rounded-full bg-violet-200/50" />
+        <span className="mx-auto block h-1.5 w-2/3 rounded-full bg-tv-sky/70" />
       </div>
     </div>
   );
@@ -63,7 +66,7 @@ const SceneLayer: React.FC<{ scene: ConcertMode['scene'] }> = ({ scene }) =>
  * The concert-mode chooser as a 3D carousel: the centred card sits forward, the other tilts away.
  * Drag, swipe, arrow buttons, dots and the keyboard (← →) all move it; every action is a real button.
  */
-export const ConcertCarousel: React.FC<ConcertCarouselProps> = ({ modes }) => {
+export const ConcertCarousel: React.FC<ConcertCarouselProps> = ({ modes, titleAs: Title = 'h2' }) => {
   const reducedMotion = useReducedMotionPreference();
   const [index, setIndex] = useState(0);
   const [drag, setDrag] = useState(0);
@@ -157,8 +160,9 @@ export const ConcertCarousel: React.FC<ConcertCarouselProps> = ({ modes }) => {
         {announcement}
       </p>
 
-      {/* Clip horizontally only, so the side cards never cause page scroll; on wider screens they fade out at the edges */}
-      <div className="overflow-x-clip py-4 sm:[mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+      {/* Clip horizontally only, so the side cards never cause page scroll. From tablet up the stage spans the full
+          window width, so the neighbouring card is visible beside the centred one, fading out at the window edges. */}
+      <div className="overflow-x-clip py-4 sm:mx-[calc(50%-50vw)] sm:[mask-image:linear-gradient(to_right,transparent,black_6%,black_94%,transparent)]">
         <div
           data-carousel-track
           className="grid select-none [&>*]:col-start-1 [&>*]:row-start-1 justify-items-center"
@@ -203,43 +207,42 @@ export const ConcertCarousel: React.FC<ConcertCarouselProps> = ({ modes }) => {
                     tabIndex={-1}
                     aria-hidden="true"
                     onClick={() => go(i)}
-                    className="absolute inset-0 z-20 cursor-pointer rounded-3xl bg-transparent"
+                    className="absolute inset-0 z-20 cursor-pointer rounded-tv-lg bg-transparent"
                   />
                 )}
                 <article
                   inert={!active}
-                  className={`group relative h-full rounded-3xl overflow-hidden bg-[#11162b] border flex flex-col transition-[border-color,box-shadow,transform] duration-300 motion-reduce:transition-none ${
+                  className={`group relative h-full rounded-tv-lg overflow-hidden bg-tv-paper border border-tv-line flex flex-col transition-[box-shadow,transform] duration-300 motion-reduce:transition-none ${
                     active
-                      ? 'border-white/15 hover:border-violet-300/50 hover:shadow-[0_30px_80px_-30px_rgba(139,92,246,0.55)] hover:-translate-y-1 focus-within:ring-2 focus-within:ring-amber-400 focus-within:ring-offset-2 focus-within:ring-offset-[#070a1a]'
-                      : 'border-white/10'
+                      ? 'shadow-tv-lift hover:-translate-y-1 focus-within:ring-2 focus-within:ring-tv-violet-ink focus-within:ring-offset-2 focus-within:ring-offset-tv-canvas'
+                      : 'shadow-tv-soft'
                   }`}
                 >
                   <div className="relative aspect-[16/10] overflow-hidden">
-                    <img src={mode.image} alt={mode.imageAlt} draggable={false} className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#11162b] via-[#11162b]/30 to-[#070a1a]/20" />
+                    <img src={mode.image} alt={mode.imageAlt} draggable={false} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03] motion-reduce:transition-none" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-tv-navy/45 via-transparent to-transparent" />
                     <SceneLayer scene={mode.scene} />
                     {/* Glass sheen that glides across on hover */}
                     <span
                       aria-hidden="true"
-                      className="pointer-events-none absolute -inset-y-4 -left-1/2 w-1/2 rotate-12 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-0 transition-transform duration-700 group-hover:translate-x-[300%] motion-reduce:hidden"
+                      className="pointer-events-none absolute -inset-y-4 -left-1/2 w-1/2 rotate-12 bg-gradient-to-r from-transparent via-white/15 to-transparent translate-x-0 transition-transform duration-700 group-hover:translate-x-[300%] motion-reduce:hidden"
                     />
-                    <span className="absolute top-4 left-4 w-10 h-10 rounded-full bg-black/55 backdrop-blur-md border border-white/15 flex items-center justify-center">
-                      <Icon className="w-5 h-5 text-amber-300" aria-hidden="true" />
+                    <span className="absolute top-4 left-4 w-10 h-10 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center">
+                      <Icon className="w-5 h-5 text-tv-navy" aria-hidden="true" />
                     </span>
                   </div>
 
                   <div className="p-6 sm:p-7 flex-1 flex flex-col gap-4">
                     <div className="space-y-2">
-                      <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">{mode.title}</h2>
-                      <p id={descriptionId} className="text-sm sm:text-base text-stone-300 font-light leading-relaxed">
+                      <Title className="text-2xl sm:text-3xl font-semibold tracking-[-0.03em] text-tv-navy">{mode.title}</Title>
+                      <p id={descriptionId} className="font-serif italic text-xl sm:text-2xl text-tv-navy/80 leading-snug">
                         {mode.tagline}
                       </p>
                     </div>
-                    <ul className="space-y-2 text-sm text-stone-300">
+                    <ul className="flex flex-wrap gap-1.5 text-xs font-medium text-tv-navy">
                       {mode.highlights.map((highlight) => (
-                        <li key={highlight} className="flex items-start gap-2">
-                          <span className="mt-2 w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" aria-hidden="true" />
-                          <span>{highlight}</span>
+                        <li key={highlight} className="rounded-full bg-tv-mist px-3 py-1.5">
+                          {highlight}
                         </li>
                       ))}
                     </ul>
@@ -249,7 +252,7 @@ export const ConcertCarousel: React.FC<ConcertCarouselProps> = ({ modes }) => {
                       }}
                       onClick={mode.onSelect}
                       aria-describedby={descriptionId}
-                      className="mt-auto self-start inline-flex min-h-11 items-center gap-2 rounded-full bg-amber-400 px-5 text-sm font-bold uppercase tracking-wider text-stone-950 hover:bg-amber-300 transition-colors cursor-pointer focus:outline-none"
+                      className={`${buttonClass('primary')} mt-auto self-start focus:outline-none`}
                     >
                       Start {mode.title}
                       <ArrowRight className="w-4 h-4" aria-hidden="true" />
@@ -268,7 +271,7 @@ export const ConcertCarousel: React.FC<ConcertCarouselProps> = ({ modes }) => {
           onClick={() => go(index - 1)}
           disabled={index === 0}
           aria-label="Previous concert mode"
-          className={`inline-flex size-11 items-center justify-center rounded-full border border-white/15 bg-white/5 text-stone-100 hover:bg-white/15 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer ${FOCUS_RING}`}
+          className={`inline-flex size-11 items-center justify-center rounded-full border border-tv-line bg-tv-paper text-tv-navy hover:border-tv-navy/30 hover:bg-tv-mist disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer ${FOCUS_LIGHT}`}
         >
           <ChevronLeft className="w-5 h-5" aria-hidden="true" />
         </button>
@@ -280,11 +283,11 @@ export const ConcertCarousel: React.FC<ConcertCarouselProps> = ({ modes }) => {
               onClick={() => go(i)}
               aria-label={`Show ${mode.title}`}
               aria-current={i === index ? 'true' : undefined}
-              className={`group inline-flex size-11 items-center justify-center rounded-full cursor-pointer ${FOCUS_RING}`}
+              className={`group inline-flex size-11 items-center justify-center rounded-full cursor-pointer ${FOCUS_LIGHT}`}
             >
               <span
                 aria-hidden="true"
-                className={`block h-2 rounded-full transition-all duration-300 motion-reduce:transition-none ${i === index ? 'w-7 bg-amber-300' : 'w-2 bg-white/35 group-hover:bg-white/60'}`}
+                className={`block h-2 rounded-full transition-all duration-300 motion-reduce:transition-none ${i === index ? 'w-7 bg-tv-navy' : 'w-2 bg-tv-navy/25 group-hover:bg-tv-navy/50'}`}
               />
             </button>
           ))}
@@ -294,12 +297,12 @@ export const ConcertCarousel: React.FC<ConcertCarouselProps> = ({ modes }) => {
           onClick={() => go(index + 1)}
           disabled={index === count - 1}
           aria-label="Next concert mode"
-          className={`inline-flex size-11 items-center justify-center rounded-full border border-white/15 bg-white/5 text-stone-100 hover:bg-white/15 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer ${FOCUS_RING}`}
+          className={`inline-flex size-11 items-center justify-center rounded-full border border-tv-line bg-tv-paper text-tv-navy hover:border-tv-navy/30 hover:bg-tv-mist disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer ${FOCUS_LIGHT}`}
         >
           <ChevronRight className="w-5 h-5" aria-hidden="true" />
         </button>
       </div>
-      <p className="mt-2 text-center text-xs text-stone-400">Swipe, drag, or use the arrow keys to switch modes.</p>
+      <p className="mt-2 text-center text-xs text-tv-slate">Swipe, drag, or use the arrow keys to switch modes.</p>
     </section>
   );
 };

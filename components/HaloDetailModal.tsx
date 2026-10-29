@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, 
@@ -79,6 +79,14 @@ export const HaloDetailModal: React.FC<HaloDetailModalProps> = ({
 
   const selectedPart = parts[activePart] || parts.lra;
 
+  // Escape closes the dialog, like the Close button and the backdrop.
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
@@ -90,7 +98,7 @@ export const HaloDetailModal: React.FC<HaloDetailModalProps> = ({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
-          className="absolute inset-0 bg-[#141312]/60 backdrop-blur-md"
+          className="absolute inset-0 bg-tv-navy/50 backdrop-blur-md"
         />
 
         {/* Modal Window */}
@@ -99,48 +107,53 @@ export const HaloDetailModal: React.FC<HaloDetailModalProps> = ({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.96, y: 15 }}
           transition={{ duration: 0.25, ease: 'easeOut' }}
-          className="relative w-full max-w-4xl bg-[#faf7f2] rounded-3xl shadow-2xl border border-stone-200 overflow-hidden text-[#141312] flex flex-col max-h-[90vh]"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="halo-architecture-title"
+          className="relative w-full max-w-4xl bg-tv-canvas rounded-tv-lg shadow-tv-lift border border-tv-line overflow-hidden text-tv-navy flex flex-col max-h-[90vh]"
         >
           {/* Header */}
-          <div className="p-6 pb-4 flex items-center justify-between border-b border-stone-200/80 bg-white/70">
+          <div className="p-6 pb-4 flex items-center justify-between border-b border-tv-line bg-white/70">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <span className="text-[11px] font-mono-tech tracking-wider uppercase text-[#b45309] font-semibold px-2.5 py-0.5 rounded-full bg-amber-100/70 border border-amber-200">
+                <span className="text-[11px] font-mono-tech tracking-wider uppercase text-tv-violet-ink font-semibold px-2.5 py-0.5 rounded-full bg-tv-mist border border-tv-line">
                   TECHNICAL ARCHITECTURE
                 </span>
-                <span className="text-xs text-stone-400">· EXPLODED VIEW</span>
+                <span className="text-xs text-tv-slate">· EXPLODED VIEW</span>
               </div>
-              <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-[#141312]">
-                TΛVY <span className="font-editorial-serif italic text-[#b45309] font-normal">Halo</span> Architecture
+              <h3 id="halo-architecture-title" className="text-xl sm:text-2xl font-bold tracking-tight text-tv-navy">
+                TΛVY <span className="font-serif italic text-tv-violet-ink font-normal">Halo</span> Architecture
               </h3>
             </div>
 
             <button
               onClick={onClose}
-              className="p-2.5 rounded-full hover:bg-stone-200/80 text-stone-500 hover:text-[#141312] transition-colors cursor-pointer border-0 bg-transparent"
+              className="p-2.5 rounded-full hover:bg-tv-line/80 text-tv-slate hover:text-tv-navy transition-colors cursor-pointer border-0 bg-transparent"
               title="Close"
+              aria-label="Close"
+              autoFocus
             >
-              <X className="w-5 h-5" />
+              <X className="w-5 h-5" aria-hidden="true" />
             </button>
           </div>
 
           {/* Modal Content */}
           <div className="p-6 sm:p-8 space-y-6 overflow-y-auto flex-1">
             {/* Exploded View Image */}
-            <div className="relative rounded-2xl overflow-hidden border border-stone-200 bg-stone-100 shadow-inner">
+            <div className="relative rounded-2xl overflow-hidden border border-tv-line bg-tv-mist shadow-inner">
               <img
                 src={haloExplodedImg}
                 alt="TΛVY Halo Exploded View Technical Breakdown"
                 className="w-full h-auto object-cover"
               />
-              <div className="absolute bottom-3 left-4 text-xs font-medium text-stone-600 bg-white/90 px-3 py-1 rounded-full border border-stone-200 backdrop-blur-sm shadow-sm">
+              <div className="absolute bottom-3 left-4 text-xs font-medium text-tv-slate bg-white/90 px-3 py-1 rounded-full border border-tv-line backdrop-blur-sm shadow-sm">
                 System-Level Component Separation
               </div>
             </div>
 
             {/* Component Selector Tabs */}
             <div className="space-y-2">
-              <p className="text-xs font-medium uppercase text-stone-500 tracking-wider">
+              <p className="text-xs font-medium uppercase text-tv-slate tracking-wider">
                 Select Sub-System to Inspect
               </p>
               <div className="flex flex-wrap gap-2">
@@ -156,8 +169,8 @@ export const HaloDetailModal: React.FC<HaloDetailModalProps> = ({
                     onClick={() => setActivePart(tab.id)}
                     className={`px-3.5 py-2 rounded-xl text-xs font-medium transition-all cursor-pointer border ${
                       activePart === tab.id
-                        ? 'bg-[#141312] text-white border-[#141312] shadow-sm'
-                        : 'bg-white hover:bg-stone-100 text-stone-600 border-stone-200'
+                        ? 'bg-tv-navy text-white border-tv-navy shadow-sm'
+                        : 'bg-white hover:bg-tv-mist text-tv-slate border-tv-line'
                     }`}
                   >
                     {tab.label}
@@ -167,13 +180,13 @@ export const HaloDetailModal: React.FC<HaloDetailModalProps> = ({
             </div>
 
             {/* Selected Component Detail Drawer */}
-            <div className="p-5 sm:p-6 rounded-2xl bg-white border border-stone-200 space-y-4 shadow-sm">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-stone-100 pb-3">
+            <div className="p-5 sm:p-6 rounded-2xl bg-white border border-tv-line space-y-4 shadow-sm">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-tv-line pb-3">
                 <div>
-                  <span className="text-xs font-semibold text-[#b45309] uppercase tracking-wider">
+                  <span className="text-xs font-semibold text-tv-violet-ink uppercase tracking-wider">
                     {selectedPart.badge}
                   </span>
-                  <h4 className="text-lg sm:text-xl font-bold text-[#141312] mt-0.5">
+                  <h4 className="text-lg sm:text-xl font-bold text-tv-navy mt-0.5">
                     {selectedPart.name}
                   </h4>
                 </div>
@@ -183,19 +196,19 @@ export const HaloDetailModal: React.FC<HaloDetailModalProps> = ({
                 </div>
               </div>
 
-              <p className="text-stone-600 text-sm leading-relaxed font-light">
+              <p className="text-tv-slate text-sm leading-relaxed ">
                 {selectedPart.desc}
               </p>
 
-              <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200/80 text-xs text-stone-700">
-                <span className="text-stone-400 font-semibold uppercase">Engineering Spec: </span>
+              <div className="p-3.5 rounded-xl bg-tv-mist/60 border border-tv-line text-xs text-tv-navy">
+                <span className="text-tv-slate font-semibold uppercase">Engineering Spec: </span>
                 {selectedPart.spec}
               </div>
 
               <div className="pt-2 flex justify-end">
                 <button
                   onClick={onClose}
-                  className="py-2.5 px-5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-medium transition-colors cursor-pointer border border-stone-200"
+                  className="py-2.5 px-5 rounded-xl bg-tv-mist hover:bg-tv-line text-tv-navy text-xs font-medium transition-colors cursor-pointer border border-tv-line"
                 >
                   Return to Overview
                 </button>

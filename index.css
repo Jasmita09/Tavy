@@ -18,7 +18,36 @@
   --color-anticipate: rgb(var(--ab-anticipate));
 }
 
+/*
+ * TΛVY site design system (bright). Used by the landing page, experience selection, Halo showcase and
+ * Companion App frame; the concert performance screens keep the darker --ab-* stage tokens above.
+ */
+:root {
+  --tv-canvas: 250 249 253;       /* #FAF9FD warm off-white page */
+  --tv-paper: 255 255 255;        /* #FFFFFF raised surface */
+  --tv-mist: 242 238 250;         /* #F2EEFA subtle lavender surface */
+  --tv-navy: 23 21 46;            /* #17152E primary text */
+  --tv-slate: 102 100 122;        /* #66647A secondary text */
+  --tv-line: 228 224 238;         /* hairlines and borders */
+  --tv-violet: 141 114 232;       /* #8D72E8 accent fills, large type only */
+  --tv-violet-ink: 91 67 196;     /* #5B43C4 accent for text, links and focus (AA on white) */
+  --tv-blush: 230 168 215;        /* #E6A8D7 */
+  --tv-sky: 200 231 250;          /* #C8E7FA */
+  --tv-peach: 246 201 173;        /* #F6C9AD warm concert accent */
+  --tv-radius-sm: 12px;
+  --tv-radius-md: 20px;
+  --tv-radius-lg: 28px;
+  --tv-radius-xl: 40px;
+  --tv-shadow-soft: 0 1px 2px rgb(23 21 46 / 0.04), 0 12px 32px -16px rgb(23 21 46 / 0.14);
+  --tv-shadow-lift: 0 2px 4px rgb(23 21 46 / 0.04), 0 32px 64px -32px rgb(23 21 46 / 0.32);
+}
+
 /* High Contrast preference (set on <html> by the concert settings) */
+html[data-contrast="high"] {
+  --tv-slate: 23 21 46;
+  --tv-line: 110 106 132;
+  --tv-violet-ink: 64 40 160;
+}
 html[data-contrast="high"] {
   --ab-stage: 0 0 0;
   --ab-surface: 12 12 14;

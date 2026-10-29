@@ -3,15 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TΛVY Halo — The Wearable Engineered for Live Sound</title>
-    <meta name="description" content="Feel the concert through 35Hz sub-bass bone conduction and synchronized pastel crowd optics. Dedicated product architecture by TΛVY." />
-    <meta property="og:title" content="TΛVY Halo — The Wearable Engineered for Live Sound" />
-    <meta property="og:description" content="Feel the concert through 35Hz sub-bass bone conduction and synchronized pastel crowd optics. Dedicated product architecture by TΛVY." />
+    <title>TΛVY — Feel the music. Together.</title>
+    <meta name="description" content="Two concert experiences, live and at home, with visual beats, lyrics, optional haptics and sensory settings. Designed with Deaf and hard-of-hearing audiences in mind." />
+    <meta property="og:title" content="TΛVY — Feel the music. Together." />
+    <meta property="og:description" content="Two concert experiences, live and at home, with visual beats, lyrics, optional haptics and sensory settings. Designed with Deaf and hard-of-hearing audiences in mind." />
+    <meta name="theme-color" content="#FAF9FD" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       // Concert Experience (ported from AuraBeat) design tokens. Values live as CSS variables in
       // index.css so the High Contrast preference can swap them.
       const abColor = (name) => `rgb(var(--ab-${name}) / <alpha-value>)`;
+      // TΛVY site design tokens (bright system). Values live in index.css as --tv-* variables.
+      const tvColor = (name) => `rgb(var(--tv-${name}) / <alpha-value>)`;
       tailwind.config = {
         theme: {
           extend: {
@@ -22,9 +25,33 @@
               aura: abColor('aura'),
               anticipate: abColor('anticipate'),
               alert: abColor('alert'),
+              tv: {
+                canvas: tvColor('canvas'),
+                paper: tvColor('paper'),
+                mist: tvColor('mist'),
+                navy: tvColor('navy'),
+                slate: tvColor('slate'),
+                line: tvColor('line'),
+                violet: tvColor('violet'),
+                'violet-ink': tvColor('violet-ink'),
+                blush: tvColor('blush'),
+                sky: tvColor('sky'),
+                peach: tvColor('peach'),
+              },
             },
             fontFamily: {
               display: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+              serif: ['"Instrument Serif"', 'Georgia', 'serif'],
+            },
+            borderRadius: {
+              'tv-sm': 'var(--tv-radius-sm)',
+              'tv-md': 'var(--tv-radius-md)',
+              'tv-lg': 'var(--tv-radius-lg)',
+              'tv-xl': 'var(--tv-radius-xl)',
+            },
+            boxShadow: {
+              'tv-soft': 'var(--tv-shadow-soft)',
+              'tv-lift': 'var(--tv-shadow-lift)',
             },
             animation: {
               'aura-drift': 'aura-drift 18s ease-in-out infinite alternate',
@@ -66,13 +93,13 @@
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400;1,500;1,600;1,700&family=Italiana&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400;1,500;1,600;1,700&family=Italiana&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
     <style>
       html {
         scroll-behavior: smooth;
         -ms-overflow-style: none;
         scrollbar-width: thin;
-        scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
+        scrollbar-color: rgba(23, 21, 46, 0.15) transparent;
       }
       
       ::-webkit-scrollbar {
@@ -86,8 +113,8 @@
 
       body {
         font-family: 'Plus Jakarta Sans', sans-serif;
-        background-color: #faf7f2;
-        color: #141312;
+        background-color: #FAF9FD;
+        color: #17152E;
         overflow-x: hidden;
         -webkit-font-smoothing: antialiased;
       }

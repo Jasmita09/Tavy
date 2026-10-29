@@ -1,141 +1,135 @@
-import React, { useState, useEffect } from 'react';
-import { ArrowRight, Music2 } from 'lucide-react';
+import React, { useEffect, useId, useRef, useState } from 'react';
+import { ArrowRight, Menu, X } from 'lucide-react';
+import { buttonClass } from './ui/Button';
+import { FOCUS_LIGHT } from './ui/tokens';
+
+/** Landing-page sections the navigation can reach. Each id exists in HomePortal. */
+export const NAV_SECTIONS = [
+  { id: 'experience', label: 'Experience' },
+  { id: 'accessibility', label: 'Accessibility' },
+  { id: 'halo', label: 'Halo' },
+  { id: 'memories', label: 'Memories' },
+] as const;
+
+/** Scrolls to a landing section and moves keyboard focus to its heading. */
+export const goToSection = (id: string) => {
+  const section = document.getElementById(id);
+  if (!section) return;
+  section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const heading = section.querySelector<HTMLElement>('h2');
+  if (heading) {
+    heading.tabIndex = -1;
+    heading.focus({ preventScroll: true });
+  }
+};
 
 interface GlobalNavbarProps {
-  onOpenDownloadApp: () => void;
-  onOpenArchitecture: () => void;
   onEnterExperience: () => void;
 }
 
-export const GlobalNavbar: React.FC<GlobalNavbarProps> = ({
-  onOpenDownloadApp,
-  onOpenArchitecture,
-  onEnterExperience,
-}) => {
+export const GlobalNavbar: React.FC<GlobalNavbarProps> = ({ onEnterExperience }) => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuId = useId();
+  const menuButton = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 80) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 24);
+    handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const scrollToSection = (id: string) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
+  // Escape closes the mobile menu and returns focus to its button.
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      setMenuOpen(false);
+      menuButton.current?.focus();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [menuOpen]);
+
+  const go = (id: string) => {
+    setMenuOpen(false);
+    goToSection(id);
   };
+
+  const link = `inline-flex min-h-11 items-center rounded-full px-3 text-sm font-medium text-tv-slate hover:text-tv-navy transition-colors cursor-pointer ${FOCUS_LIGHT}`;
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 h-20 px-4 sm:px-8 transition-all duration-300 ${
-        isScrolled
-          ? 'bg-[#faf7f2]/95 backdrop-blur-md border-b border-stone-200/70 text-[#141312] shadow-sm'
-          : 'bg-black/40 backdrop-blur-md border-b border-white/10 text-white'
+      className={`fixed inset-x-0 top-0 z-50 transition-[background-color,border-color,box-shadow] duration-300 ${
+        isScrolled || menuOpen ? 'bg-tv-canvas/90 backdrop-blur-xl border-b border-tv-line' : 'bg-transparent border-b border-transparent'
       }`}
     >
-      <div className="max-w-7xl mx-auto h-full flex items-center justify-between gap-4">
-        {/* Left: TΛVY Brand & Product Name */}
-        <div className="flex items-center gap-8 shrink-0">
-          <button
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="group flex items-center gap-2.5 bg-transparent border-0 cursor-pointer p-0 text-left"
-            title="TΛVY — Return to top"
-          >
-            <span className="w-2.5 h-2.5 rounded-full bg-[#b45309] transition-transform group-hover:scale-125 duration-300 shadow-sm" />
-            <span
-              className={`text-xl sm:text-2xl font-bold tracking-tight transition-colors ${
-                isScrolled ? 'text-[#141312] group-hover:text-[#b45309]' : 'text-white group-hover:text-amber-300'
-              }`}
-            >
-              TΛVY
-            </span>
-          </button>
+      <div className="mx-auto flex h-16 sm:h-[72px] max-w-6xl items-center justify-between gap-4 px-4 sm:px-8">
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className={`inline-flex min-h-11 items-center rounded-full px-1 text-xl font-bold tracking-[-0.02em] text-tv-navy cursor-pointer ${FOCUS_LIGHT}`}
+          aria-label="TΛVY, back to top"
+        >
+          TΛVY
+        </button>
 
-          {/* Clean Whoop/Oura Style Navigation Links */}
-          <nav
-            className={`hidden md:flex items-center gap-8 text-sm font-medium tracking-normal transition-colors ${
-              isScrolled ? 'text-stone-600' : 'text-stone-300'
-            }`}
-          >
-            <button
-              onClick={() => scrollToSection('ecosystem')}
-              className={`bg-transparent border-0 cursor-pointer transition-colors ${
-                isScrolled ? 'hover:text-[#141312]' : 'hover:text-white'
-              }`}
-            >
-              Ecosystem
-            </button>
-            <button
-              onClick={() => scrollToSection('architecture')}
-              className={`bg-transparent border-0 cursor-pointer transition-colors ${
-                isScrolled ? 'hover:text-[#141312]' : 'hover:text-white'
-              }`}
-            >
-              Architecture
-            </button>
-            <button
-              onClick={() => scrollToSection('features')}
-              className={`bg-transparent border-0 cursor-pointer transition-colors ${
-                isScrolled ? 'hover:text-[#141312]' : 'hover:text-white'
-              }`}
-            >
-              Features
-            </button>
-            <button
-              onClick={() => scrollToSection('how-it-works')}
-              className={`bg-transparent border-0 cursor-pointer transition-colors ${
-                isScrolled ? 'hover:text-[#141312]' : 'hover:text-white'
-              }`}
-            >
-              How It Works
-            </button>
-            <button
-              onClick={() => scrollToSection('tech-specs')}
-              className={`bg-transparent border-0 cursor-pointer transition-colors ${
-                isScrolled ? 'hover:text-[#141312]' : 'hover:text-white'
-              }`}
-            >
-              Tech Specs
-            </button>
-          </nav>
-        </div>
+        <nav aria-label="Primary" className="hidden md:block">
+          <ul className="flex items-center gap-1">
+            {NAV_SECTIONS.map((s) => (
+              <li key={s.id}>
+                <button onClick={() => go(s.id)} className={link}>
+                  {s.label}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </nav>
 
-        {/* Right Section: Concert Experience entry + [ DOWNLOAD APP -> ] button */}
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-          <button
-            onClick={onEnterExperience}
-            className={`px-4 sm:px-5 py-2.5 rounded-full text-xs sm:text-sm font-medium tracking-wide transition-all cursor-pointer flex items-center gap-2 border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 ${
-              isScrolled
-                ? 'bg-transparent hover:bg-stone-200/60 text-[#141312] border-stone-300 focus-visible:ring-offset-[#faf7f2]'
-                : 'bg-white/10 hover:bg-white/20 text-white border-white/30 focus-visible:ring-offset-black'
-            }`}
-          >
-            <Music2 className={`w-3.5 h-3.5 ${isScrolled ? 'text-[#b45309]' : 'text-amber-300'}`} aria-hidden="true" />
-            <span className="hidden sm:inline">Enter Concert Experience</span>
-            <span className="sm:hidden">Experience</span>
+        <div className="flex items-center gap-2">
+          <button onClick={onEnterExperience} className={`${buttonClass('primary')} hidden sm:inline-flex`}>
+            Enter Experience
+            <ArrowRight className="w-4 h-4" aria-hidden="true" />
           </button>
           <button
-            onClick={onOpenDownloadApp}
-            className={`px-4 sm:px-6 py-2.5 rounded-full text-xs sm:text-sm font-medium tracking-wide shadow-sm hover:shadow-md transition-all cursor-pointer border-0 flex items-center gap-2 group ${
-              isScrolled
-                ? 'bg-[#141312] hover:bg-stone-800 text-[#faf7f2]'
-                : 'bg-white hover:bg-stone-200 text-[#141312]'
-            }`}
+            ref={menuButton}
+            onClick={() => setMenuOpen((open) => !open)}
+            aria-expanded={menuOpen}
+            aria-controls={menuId}
+            className={`md:hidden inline-flex size-11 items-center justify-center rounded-full text-tv-navy hover:bg-tv-mist cursor-pointer ${FOCUS_LIGHT}`}
           >
-            <span className="hidden sm:inline">Download App</span>
-            <span className="sm:hidden">Get App</span>
-            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+            {menuOpen ? <X className="w-5 h-5" aria-hidden="true" /> : <Menu className="w-5 h-5" aria-hidden="true" />}
+            <span className="sr-only">{menuOpen ? 'Close menu' : 'Open menu'}</span>
           </button>
         </div>
       </div>
+
+      {menuOpen && (
+        <nav id={menuId} aria-label="Menu" className="md:hidden border-t border-tv-line bg-tv-canvas px-4 pb-6 pt-2">
+          <ul className="divide-y divide-tv-line">
+            {NAV_SECTIONS.map((s) => (
+              <li key={s.id}>
+                <button
+                  onClick={() => go(s.id)}
+                  className={`flex min-h-12 w-full items-center justify-between rounded-lg text-left text-lg font-medium text-tv-navy cursor-pointer ${FOCUS_LIGHT}`}
+                >
+                  {s.label}
+                  <ArrowRight className="w-4 h-4 text-tv-slate" aria-hidden="true" />
+                </button>
+              </li>
+            ))}
+          </ul>
+          <button
+            onClick={() => {
+              setMenuOpen(false);
+              onEnterExperience();
+            }}
+            className={`${buttonClass('primary', 'lg')} mt-4 w-full`}
+          >
+            Enter Experience
+          </button>
+        </nav>
+      )}
     </header>
   );
 };

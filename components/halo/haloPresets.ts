@@ -10,7 +10,7 @@ export interface HaloPreset {
   rim: string;
   /** The light window's gradient, left to right. */
   glow: [string, string];
-  /** Page backdrop behind the canvas (CSS). */
+  /** Soft tint behind the model on the light showcase stage (CSS). */
   backdrop: string;
 }
 
@@ -21,7 +21,7 @@ export const HALO_PRESETS: HaloPreset[] = [
     key: '#e9e2ff',
     rim: '#8b5cf6',
     glow: ['#fdba74', '#c4b5fd'],
-    backdrop: 'radial-gradient(ellipse at 60% 40%, rgba(139,92,246,0.32), rgba(7,10,26,0) 60%)',
+    backdrop: 'radial-gradient(ellipse at 50% 46%, rgba(141,114,232,0.26), rgba(242,238,250,0) 62%)',
   },
   {
     id: 'electric-blue',
@@ -29,7 +29,7 @@ export const HALO_PRESETS: HaloPreset[] = [
     key: '#e0f2ff',
     rim: '#3b82f6',
     glow: ['#93c5fd', '#a5b4fc'],
-    backdrop: 'radial-gradient(ellipse at 60% 40%, rgba(59,130,246,0.32), rgba(7,10,26,0) 60%)',
+    backdrop: 'radial-gradient(ellipse at 50% 46%, rgba(96,165,250,0.26), rgba(242,238,250,0) 62%)',
   },
   {
     id: 'golden-beat',
@@ -37,7 +37,7 @@ export const HALO_PRESETS: HaloPreset[] = [
     key: '#fff4e0',
     rim: '#f59e0b',
     glow: ['#fcd34d', '#fb923c'],
-    backdrop: 'radial-gradient(ellipse at 60% 40%, rgba(245,158,11,0.28), rgba(7,10,26,0) 60%)',
+    backdrop: 'radial-gradient(ellipse at 50% 46%, rgba(246,180,120,0.32), rgba(242,238,250,0) 62%)',
   },
 ];
 

@@ -89,7 +89,7 @@ function shadowTexture() {
   canvas.width = canvas.height = 128;
   const ctx = canvas.getContext('2d')!;
   const g = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
-  g.addColorStop(0, 'rgba(0,0,0,0.55)');
+  g.addColorStop(0, 'rgba(23,21,46,0.3)');
   g.addColorStop(1, 'rgba(0,0,0,0)');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, 128, 128);
@@ -104,7 +104,7 @@ function StudioEnvironment() {
     const room = new RoomEnvironment();
     const env = pmrem.fromScene(room, 0.04).texture;
     scene.environment = env;
-    scene.environmentIntensity = 0.55;
+    scene.environmentIntensity = 0.85; // brighter studio for the light showcase
     return () => {
       scene.environment = null;
       env.dispose();
@@ -342,7 +342,7 @@ function HaloModel({ preset, reducedMotion, apiRef, onZoomLimits }: SceneProps) 
 
   return (
     <>
-      <ambientLight intensity={0.25} color="#1e2550" />
+      <ambientLight intensity={0.55} color="#efeaff" />
       {/* Initial colours only; later preset changes are eased in by the frame loop */}
       <directionalLight ref={keyLight} position={[3, 4, 5]} intensity={2.2} color={initialPreset.key} />
       <directionalLight ref={rimLight} position={[-3.5, 2, -4]} intensity={3.2} color={initialPreset.rim} />

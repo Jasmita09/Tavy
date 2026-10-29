@@ -36,6 +36,7 @@ import {
   Send
 } from 'lucide-react';
 
+import { buttonClass } from './ui/Button';
 import cinematicStageImg from '../src/assets/images/tavy_cinematic_stage_1792350376076.jpg';
 import stageStreamImg from '../src/assets/images/concert_stage_stream_1792160451262.jpg';
 import biasCamImg from '../src/assets/images/bias_focus_cam_1792160467203.jpg';
@@ -119,32 +120,22 @@ export const TavyCompanionApp: React.FC<TavyCompanionAppProps> = ({ onBackToWebs
   };
 
   return (
-    <div className="min-h-screen bg-[#090a0f] text-white flex flex-col items-center justify-start relative overflow-x-hidden selection:bg-amber-500 selection:text-black">
+    <div className="min-h-screen bg-[#090a0f] sm:bg-tv-canvas text-white flex flex-col items-center justify-start relative overflow-x-hidden selection:bg-amber-500 selection:text-black">
       {/* Top Banner Navigation Bar */}
-      <header className="w-full bg-[#12131a]/95 backdrop-blur-md border-b border-stone-800/80 px-4 sm:px-8 py-3.5 sticky top-0 z-50 flex items-center justify-between">
-        <button
-          onClick={onBackToWebsite}
-          className="flex items-center gap-2 text-xs sm:text-sm font-medium text-stone-300 hover:text-white transition-colors bg-white/5 hover:bg-white/10 px-4 py-2 rounded-full border border-white/10 cursor-pointer shadow-sm group"
-        >
-          <ArrowLeft className="w-4 h-4 text-amber-400 group-hover:-translate-x-0.5 transition-transform" />
+      <header className="w-full bg-tv-canvas/95 backdrop-blur-xl border-b border-tv-line px-3 sm:px-8 py-2.5 sticky top-0 z-50 flex items-center justify-between gap-2 text-tv-navy">
+        <button onClick={onBackToWebsite} className={`${buttonClass('ghost')} px-3 sm:px-5`}>
+          <ArrowLeft className="w-4 h-4" aria-hidden="true" />
           <span>Back to TΛVY Website</span>
         </button>
 
         <div className="flex items-center gap-2.5">
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/80 border border-emerald-600/50 text-[11px] font-mono text-emerald-400">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>Simulated Halo · Demo Data</span>
-          </div>
-
-          <span className="hidden sm:inline px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-semibold">
-            Interactive Companion App
+          <span className="hidden sm:inline-flex items-center gap-2 px-3 py-1 rounded-full border border-tv-line bg-tv-paper text-xs font-semibold text-tv-navy">
+            <span className="w-2 h-2 rounded-full bg-tv-violet" aria-hidden="true" />
+            Interactive Companion App · Simulated Halo · Demo Data
           </span>
 
-          <button
-            onClick={onEnterExperience}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-amber-400 hover:bg-amber-300 text-stone-950 text-xs font-bold cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#12131a]"
-          >
-            <Music className="w-3.5 h-3.5" aria-hidden="true" />
+          <button onClick={onEnterExperience} className={`${buttonClass('primary')} px-4`}>
+            <Music className="w-4 h-4" aria-hidden="true" />
             <span>Concert Experience</span>
           </button>
         </div>
@@ -153,11 +144,10 @@ export const TavyCompanionApp: React.FC<TavyCompanionAppProps> = ({ onBackToWebs
       {/* Main Container - Responsive Phone Mockup on Desktop, Edge-to-Edge on Mobile */}
       <main className="w-full flex-1 flex flex-col items-center justify-center p-0 sm:p-6 md:p-8">
         {/* Subtle Ambient Glow behind Phone on Desktop */}
-        <div className="absolute top-1/3 w-[550px] h-[550px] bg-amber-600/10 rounded-full blur-[140px] pointer-events-none" />
-        <div className="absolute bottom-10 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[160px] pointer-events-none" />
+        <div aria-hidden="true" className="hidden sm:block absolute top-1/4 w-[560px] max-w-full h-[560px] bg-tv-violet/15 rounded-full blur-[140px] pointer-events-none" />
 
         {/* Smartphone Shell Frame */}
-        <div className="relative w-full max-w-[420px] bg-[#0c0d14] sm:border-[8px] sm:border-stone-800 sm:rounded-[48px] shadow-[0_25px_70px_rgba(0,0,0,0.85)] overflow-hidden flex flex-col min-h-screen sm:min-h-[780px] sm:max-h-[860px]">
+        <div className="relative w-full max-w-[420px] bg-[#0c0d14] sm:border-[8px] sm:border-stone-800 sm:rounded-[48px] sm:shadow-[0_40px_90px_-30px_rgba(23,21,46,0.55)] overflow-hidden flex flex-col min-h-screen sm:min-h-[780px] sm:max-h-[860px]">
           {/* iOS Dynamic Island / Notch */}
           <div className="hidden sm:flex items-center justify-between px-7 pt-3.5 pb-2 text-[11px] font-medium text-stone-400 select-none z-30 bg-[#0c0d14]">
             <span>22:24</span>
