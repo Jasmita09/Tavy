@@ -73,6 +73,16 @@ Each problem was reproduced before the fix and verified after it. FIX-01 to FIX-
 
 **Yes.** The crash, the two accessibility blockers, UX-01 and UX-02 are fixed. UX-03, UX-04 and UX-05 are left in place on purpose. They are the main hypotheses the five tasks are designed to test. Use the test script and the feedback template in this folder.
 
+## After the test build (`b2e0858`)
+
+On request, the following changes landed **after** the test build. Sessions run on `6910c7b` still measure the original UX-03 to UX-05 behaviour, so record the SHA on every feedback form.
+
+- **UX-03:** a countdown to the next wave moment and a "Jump to next wave" button. Both use the track's own wave timing.
+- **UX-04:** without a wearable, the prompts say "Tap the Wave button on the beat". Results now show as Perfect/Great/Good, or **Miss** when a wave moment plays out without a tap. Score calculation is unchanged.
+- **UX-06**, **UX-07** and **UX-08** are fixed: 44 px touch targets, `<main>` landmarks, and an error boundary on the concert routes.
+- **Verification:** 32/32 wave and accessibility checks passed (seek, pause, restart, keyboard, Reduce Motion, 320/390 px layouts, axe with no landmark, region or contrast violations, and a blocked-chunk error screen), plus the 26/26 five-task walkthrough.
+- **UX-05** is unchanged.
+
 ## Test build
 
 | | |
