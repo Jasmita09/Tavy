@@ -46,9 +46,10 @@ import tavyHaloHeroImg from '../src/assets/images/tavy_halo_hero_1792275821098.j
 interface TavyCompanionAppProps {
   onBackToWebsite: () => void;
   onEnterExperience: () => void;
+  onOpenMemoryBook: () => void;
 }
 
-export const TavyCompanionApp: React.FC<TavyCompanionAppProps> = ({ onBackToWebsite, onEnterExperience }) => {
+export const TavyCompanionApp: React.FC<TavyCompanionAppProps> = ({ onBackToWebsite, onEnterExperience, onOpenMemoryBook }) => {
   // Navigation tabs: venue | stream | halo | history
   const [activeTab, setActiveTab] = useState<'venue' | 'stream' | 'halo' | 'history'>('venue');
 
@@ -705,6 +706,20 @@ export const TavyCompanionApp: React.FC<TavyCompanionAppProps> = ({ onBackToWebs
                         </div>
                       </div>
                     ))}
+                  </div>
+
+                  {/* The lasting version of these bookmarks lives in the Memory Book */}
+                  <div className="pt-2 border-t border-stone-800/80 space-y-2">
+                    <p className="text-[10px] leading-relaxed text-stone-400">
+                      Bookmarks here are a demo and disappear when you leave. To keep a moment with a photo and a note, add it to your Memory Book.
+                    </p>
+                    <button
+                      onClick={onOpenMemoryBook}
+                      className="w-full min-h-11 flex items-center justify-center gap-2 rounded-xl border border-amber-500/40 bg-amber-500/10 text-amber-300 text-xs font-semibold hover:bg-amber-500/20 cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+                    >
+                      <Bookmark className="w-3.5 h-3.5" aria-hidden="true" />
+                      Open Memory Book
+                    </button>
                   </div>
                 </div>
               </motion.div>

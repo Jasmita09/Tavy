@@ -25,6 +25,7 @@ interface HomePortalProps {
   onSelectAtHome: () => void;
   onOpenHaloShowcase: () => void;
   onOpenCompanionApp: () => void;
+  onOpenMemoryBook: () => void;
 }
 
 const ACCESS_FEATURES = [
@@ -77,6 +78,7 @@ export const HomePortal: React.FC<HomePortalProps> = ({
   onSelectAtHome,
   onOpenHaloShowcase,
   onOpenCompanionApp,
+  onOpenMemoryBook,
 }) => {
   const reduced = useReducedMotionPreference();
   const haloConceptId = useId();
@@ -260,15 +262,18 @@ export const HomePortal: React.FC<HomePortalProps> = ({
                 </div>
                 <div className="mt-5 flex items-center gap-2">
                   <h3 className="text-lg font-semibold text-tv-navy">Memory Book</h3>
-                  <StatusTag>Demo</StatusTag>
+                  <StatusTag>On this device</StatusTag>
                 </div>
                 <p className="mt-1 text-tv-slate">Save and relive your moments.</p>
                 <p className="mt-2 text-xs leading-relaxed text-tv-slate">
-                  Try Haptic Memory Bookmarks in the Companion App demo (Safety &amp; Log tab). They last for this visit only.
+                  Add concert photos and notes as Polaroid pages. Saved in this browser only; nothing is uploaded.
                 </p>
-                <button onClick={onOpenCompanionApp} className={`${buttonClass('secondary')} mt-4 self-start`}>
-                  Open Companion App
+                <button onClick={onOpenMemoryBook} className={`${buttonClass('primary')} mt-4 self-start`}>
+                  Open Memory Book
                   <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                </button>
+                <button onClick={onOpenCompanionApp} className={`mt-1 inline-flex min-h-11 items-center self-start rounded text-sm font-medium text-tv-accent-ink underline-offset-4 hover:underline cursor-pointer ${FOCUS_LIGHT}`}>
+                  Open Companion App (quick bookmarks demo)
                 </button>
               </Reveal>
             </li>
@@ -318,7 +323,8 @@ export const SiteFooter: React.FC<{
   onEnterExperience: () => void;
   onOpenHaloShowcase: () => void;
   onOpenCompanionApp: () => void;
-}> = ({ onEnterExperience, onOpenHaloShowcase, onOpenCompanionApp }) => {
+  onOpenMemoryBook: () => void;
+}> = ({ onEnterExperience, onOpenHaloShowcase, onOpenCompanionApp, onOpenMemoryBook }) => {
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterSubmitted, setNewsletterSubmitted] = useState(false);
   const emailId = useId();
@@ -378,7 +384,7 @@ export const SiteFooter: React.FC<{
           <ul>
             <li><button onClick={onOpenHaloShowcase} className={footLink}>Halo concept in 3D</button></li>
             <li><button onClick={onOpenCompanionApp} className={footLink}>Companion App demo</button></li>
-            <li><button onClick={() => goToSection('memories')} className={footLink}>Memories</button></li>
+            <li><button onClick={onOpenMemoryBook} className={footLink}>Memory Book</button></li>
           </ul>
         </nav>
       </div>

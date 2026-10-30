@@ -17,6 +17,8 @@ const LiveConcert = lazy(() => import('./aurabeat/pages/LiveConcert'));
 const AtHomeConcert = lazy(() => import('./aurabeat/pages/AtHomeConcert'));
 // The Halo 3D showcase (and three.js with it) also loads only when opened.
 const HaloShowcase = lazy(() => import('./components/halo/HaloShowcase'));
+// The Memory Book (IndexedDB storage and the book itself) loads only when opened.
+const MemoryBook = lazy(() => import('./components/memory/MemoryBook'));
 const concertFallback = <div className="min-h-screen bg-[#090a0f]" />;
 const pageFallback = <div className="min-h-screen bg-tv-canvas" />;
 
@@ -29,6 +31,7 @@ const AppContent: React.FC = () => {
       <TavyCompanionApp
         onBackToWebsite={() => navigate('website')}
         onEnterExperience={() => navigate('experience')}
+        onOpenMemoryBook={() => navigate('memory-book')}
       />
     );
   }
@@ -64,6 +67,21 @@ const AppContent: React.FC = () => {
     );
   }
 
+  if (view === 'memory-book') {
+    return (
+      <ConcertErrorBoundary
+        key={view}
+        onBack={() => navigate('website')}
+        title="The Memory Book couldn't load"
+        backLabel="Back to TΛVY Website"
+      >
+        <Suspense fallback={pageFallback}>
+          <MemoryBook onBack={() => navigate('website')} />
+        </Suspense>
+      </ConcertErrorBoundary>
+    );
+  }
+
   if (view === 'live-venue') {
     return (
       <ConcertErrorBoundary key={view} onBack={() => navigate('experience')}>
@@ -94,12 +112,14 @@ const AppContent: React.FC = () => {
           onSelectAtHome={() => navigate('at-home')}
           onOpenHaloShowcase={() => navigate('halo')}
           onOpenCompanionApp={() => navigate('companion-app')}
+          onOpenMemoryBook={() => navigate('memory-book')}
         />
       </main>
       <SiteFooter
         onEnterExperience={() => navigate('experience')}
         onOpenHaloShowcase={() => navigate('halo')}
         onOpenCompanionApp={() => navigate('companion-app')}
+        onOpenMemoryBook={() => navigate('memory-book')}
       />
     </div>
   );
