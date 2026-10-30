@@ -10,10 +10,14 @@ import { useLiveSession, useLiveSettings } from "../live/useLiveSession";
 import { useWatchStatus } from "../hooks/useWatchStatus";
 import { useSettings } from "../hooks/useSettings";
 import { phoneCanVibrate } from "../lib/watchBridge";
+import { SaveMomentCard } from "../../components/memory/SaveMomentCard";
+import type { ConcertMoment } from "../../components/memory/moment";
 
 interface LiveConcertProps {
   onExit: () => void;
   onSwitchMode: () => void;
+  /** TΛVY Memory Book: offered only after live mode has been stopped. */
+  onSaveMoment?: (moment: ConcertMoment) => void;
 }
 
 /**
@@ -21,7 +25,7 @@ interface LiveConcertProps {
  * synchronized lightstick, haptics, short accessibility cues, connection status, and an always-available
  * Stop. TΛVY has no venue backend, so a scripted show (simulatedVenue.ts) feeds the cues while live.
  */
-export default function LiveConcert({ onExit, onSwitchMode }: LiveConcertProps) {
+export default function LiveConcert({ onExit, onSwitchMode, onSaveMoment }: LiveConcertProps) {
   const { settings, toggle } = useLiveSettings();
   const { settings: shared, toggle: toggleShared } = useSettings(); // shared accessibility preferences
   const reducedMotion = shared.reducedMotion;
@@ -29,6 +33,7 @@ export default function LiveConcert({ onExit, onSwitchMode }: LiveConcertProps) 
   const watch = useWatchStatus();
   const session = useLiveSession(settings);
   const [lightstickOpen, setLightstickOpen] = useState(false);
+  const [showEnded, setShowEnded] = useState(false);
   const openButtonRef = useRef<HTMLButtonElement>(null);
 
   // Leaving the full-screen lightstick returns keyboard focus to the button that reopens it.
@@ -46,6 +51,7 @@ export default function LiveConcert({ onExit, onSwitchMode }: LiveConcertProps) 
   };
 
   const stop = () => {
+    if (session.active) setShowEnded(true);
     session.stop();
     setLightstickOpen(false);
   };
@@ -112,6 +118,13 @@ export default function LiveConcert({ onExit, onSwitchMode }: LiveConcertProps) 
               </p>
             )}
           </div>
+
+          {/* After the show: an optional invitation to the Memory Book, never shown while live mode runs */}
+          {onSaveMoment && showEnded && !session.active && (
+            <div className="mt-6">
+              <SaveMomentCard onSave={() => onSaveMoment({ mode: "live" })} />
+            </div>
+          )}
 
           <div className="mt-6 flex flex-col gap-4">
             <LiveStatusPanel connection={connection} watch={watch} />

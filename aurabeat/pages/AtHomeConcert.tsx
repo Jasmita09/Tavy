@@ -25,10 +25,14 @@ import { useBeatSound } from "../hooks/useBeatSound";
 import { useWatchStatus } from "../hooks/useWatchStatus";
 import type { LightstickState } from "../types/concert";
 import type { SectionMood } from "../types/performance";
+import { SaveMomentCard } from "../../components/memory/SaveMomentCard";
+import type { ConcertMoment } from "../../components/memory/moment";
 
 interface AtHomeConcertProps {
   onExit: () => void;
   onSwitchMode: () => void;
+  /** TΛVY Memory Book: offered only while playback is stopped, after the performance has played. */
+  onSaveMoment?: (moment: ConcertMoment) => void;
 }
 
 /** Presentation only: how much each mood adds to the visible energy of the concert. */
@@ -78,7 +82,7 @@ const MISS_GRACE_S = 0.75;
  * here it comes from the on-screen Tap button (or a connected wearable), and is scored by how close
  * it lands to the beat.
  */
-export default function AtHomeConcert({ onExit, onSwitchMode }: AtHomeConcertProps) {
+export default function AtHomeConcert({ onExit, onSwitchMode, onSaveMoment }: AtHomeConcertProps) {
   const { settings, toggle } = useSettings();
   const wearable = useWatchStatus() === "connected";
   const sensesId = useId();
@@ -117,6 +121,11 @@ export default function AtHomeConcert({ onExit, onSwitchMode }: AtHomeConcertPro
   const mockClock = usePlayback(track.duration);
   const clock = hasMedia ? mediaClock : { ...mockClock, duration: track.duration };
   const { time, playing, duration, getTime } = clock;
+  // Presentation only: whether the performance has played at all this visit (for the Memory Book card).
+  const [hasPlayed, setHasPlayed] = useState(false);
+  useEffect(() => {
+    if (playing) setHasPlayed(true);
+  }, [playing]);
 
   // Generated beat only when the video is unavailable, so the timeline still has sound.
   useBeatSound(track, settings.sound && !hasMedia, playing, getTime);
@@ -646,6 +655,13 @@ export default function AtHomeConcert({ onExit, onSwitchMode }: AtHomeConcertPro
                 </section>
               )}
             </div>
+
+            {/* After (or paused in) the performance: an optional invitation to the Memory Book, never during playback */}
+            {onSaveMoment && hasPlayed && !playing && (
+              <SaveMomentCard
+                onSave={() => leave(() => onSaveMoment({ mode: "at-home", title: track.title, artist: track.artist }))}
+              />
+            )}
 
             <p className="px-1 text-xs text-ink-muted">{PERFORMANCE_CREDIT}. Score and lighting are a demo; no Halo device is required.</p>
           </div>
