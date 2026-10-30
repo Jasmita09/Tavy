@@ -23,6 +23,9 @@ const C = {
   cream: '#f3e9d8',
 };
 
+/** The worlds' palette, shared with the story illustrations (components/story). */
+export const WORLD_COLORS = C;
+
 /** Light level that follows the Golden Gate: from a dim stage to full light. */
 const lit = (min: number) => `calc(${min} + ${1 - min} * var(--gate-light, 1))`;
 

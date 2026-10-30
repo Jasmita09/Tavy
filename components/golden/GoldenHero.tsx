@@ -1,9 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowDown, ArrowRight } from 'lucide-react';
+import { ArrowDown, ArrowRight, Play } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Accent } from '../ui/SectionHeading';
-import { CONTAINER, EYEBROW, MOTION } from '../ui/tokens';
+import { CONTAINER, EYEBROW, FOCUS_LIGHT, MOTION } from '../ui/tokens';
 import { MotionToggle } from './MotionToggle';
 
 /** Static gold notes: the hero's composition without WebGL. */
@@ -24,9 +24,11 @@ interface GoldenHeroProps {
   artRef: React.RefObject<HTMLDivElement | null>;
   onExplore: () => void;
   onDiscover: () => void;
+  /** Opens the optional story ("A Dream Beyond Distance"). */
+  onWatchStory?: () => void;
 }
 
-export const GoldenHero: React.FC<GoldenHeroProps> = ({ reduced, use3d, motionOn, onToggleMotion, artRef, onExplore, onDiscover }) => {
+export const GoldenHero: React.FC<GoldenHeroProps> = ({ reduced, use3d, motionOn, onToggleMotion, artRef, onExplore, onDiscover, onWatchStory }) => {
   const enter = (delay: number) =>
     reduced ? {} : { initial: { opacity: 0, y: 18 }, animate: { opacity: 1, y: 0 }, transition: { duration: MOTION.slow, ease: MOTION.ease, delay } };
 
@@ -65,6 +67,23 @@ export const GoldenHero: React.FC<GoldenHeroProps> = ({ reduced, use3d, motionOn
               Discover TΛVY
             </Button>
           </motion.div>
+          {onWatchStory && (
+            <motion.div {...enter(0.22)} className="mt-5">
+              <button
+                type="button"
+                onClick={onWatchStory}
+                className={`group inline-flex min-h-11 items-center gap-3 rounded-full pr-3 text-sm font-semibold text-tv-navy cursor-pointer ${FOCUS_LIGHT}`}
+              >
+                <span className="inline-flex size-10 items-center justify-center rounded-full border border-tv-accent/60 bg-tv-paper text-tv-accent-ink shadow-tv-soft transition-colors group-hover:bg-tv-mist">
+                  <Play className="w-4 h-4 translate-x-px" aria-hidden="true" />
+                </span>
+                <span>
+                  Watch Our Story
+                  <span className="block text-xs font-normal text-tv-slate">A one-minute silent story, with captions</span>
+                </span>
+              </button>
+            </motion.div>
+          )}
         </div>
 
         <div className="relative">

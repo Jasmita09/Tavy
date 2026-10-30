@@ -1,0 +1,90 @@
+/*
+ * Story motion. Everything that moves has .tvs-anim, so one class on the player pauses it all
+ * (.tvs-paused) or shows each scene fully composed and still (.tvs-still: reduced motion, the text
+ * version, and scenes reached while paused). No flashing: every change is a slow fade, draw or drift.
+ */
+
+.tvs-camera {
+  transform-origin: var(--tvs-origin, 50% 50%);
+  animation: tvs-camera var(--tvs-scene-ms, 7000ms) cubic-bezier(0.3, 0.1, 0.3, 1) both;
+}
+@keyframes tvs-camera {
+  from { transform: scale(1) translate(0, 0); }
+  to { transform: scale(1.07) translate(var(--tvs-dx, 0), var(--tvs-dy, 0)); }
+}
+
+.tvs-scene-in { animation: tvs-fade 700ms ease both; }
+
+.tvs-rain { animation: tvs-rain 1100ms linear infinite; }
+@keyframes tvs-rain {
+  from { transform: translateY(0); }
+  to { transform: translateY(130px); }
+}
+
+/* pathLength=1 on the path, so one dash covers it */
+.tvs-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: tvs-draw 3200ms cubic-bezier(0.45, 0.05, 0.25, 1) 300ms both;
+}
+@keyframes tvs-draw { to { stroke-dashoffset: 0; } }
+
+.tvs-fade { animation: tvs-fade 1200ms ease both; }
+.tvs-fade-slow { animation: tvs-fade 3000ms ease both; }
+@keyframes tvs-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.tvs-float { animation: tvs-float 3600ms ease-in-out infinite alternate; }
+@keyframes tvs-float {
+  from { transform: translateY(4px); }
+  to { transform: translateY(-6px); }
+}
+
+.tvs-walk { animation: tvs-walk var(--tvs-scene-ms, 7000ms) ease-out both; transform-box: fill-box; transform-origin: 50% 100%; }
+@keyframes tvs-walk {
+  from { transform: translateY(10px) scale(1.08); }
+  to { transform: translateY(0) scale(0.94); }
+}
+
+.tvs-delay-1 { animation-delay: 900ms; }
+.tvs-delay-2 { animation-delay: 1800ms; }
+.tvs-draw.tvs-delay-1 { animation-delay: 1100ms; }
+
+.tvs-ending { animation: tvs-rise 1400ms cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+@keyframes tvs-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Paused: hold every motion where it is */
+.tvs-paused .tvs-anim,
+.tvs-paused .tvs-camera,
+.tvs-paused .tvs-scene-in,
+.tvs-paused .tv-anim { animation-play-state: paused; }
+
+/* Still: the finished composition, no motion */
+.tvs-still .tvs-anim,
+.tvs-still .tvs-camera,
+.tvs-still .tvs-scene-in,
+.tvs-still .tvs-ending,
+.tvs-still .tv-anim { animation: none; }
+.tvs-still .tvs-draw { stroke-dashoffset: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .tvs-anim,
+  .tvs-camera,
+  .tvs-scene-in,
+  .tvs-ending { animation: none !important; }
+  .tvs-draw { stroke-dashoffset: 0; }
+}
+html[data-reduced-motion="true"] .tvs-anim,
+html[data-reduced-motion="true"] .tvs-camera,
+html[data-reduced-motion="true"] .tvs-scene-in,
+html[data-reduced-motion="true"] .tvs-ending { animation: none !important; }
+html[data-reduced-motion="true"] .tvs-draw { stroke-dashoffset: 0; }
+
+/* High Contrast: stronger outlines around the picture and the scene markers */
+html[data-contrast="high"] .tvs-frame { outline: 2px solid rgb(23 21 46); outline-offset: 2px; }
+html[data-contrast="high"] .tvs-segment { background: rgb(23 21 46 / 0.35); }
