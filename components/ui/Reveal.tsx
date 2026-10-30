@@ -18,7 +18,8 @@ export const Reveal: React.FC<RevealProps> = ({ children, className, delay = 0 }
       className={className}
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '0px 0px -10% 0px' }}
+      // A huge top margin counts anything already scrolled past as seen, so a fast jump can never leave it hidden
+      viewport={{ once: true, margin: '100000px 0px -10% 0px' }}
       transition={{ duration: MOTION.slow, ease: MOTION.ease, delay }}
     >
       {children}

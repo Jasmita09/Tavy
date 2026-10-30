@@ -62,7 +62,7 @@ export const GlobalNavbar: React.FC<GlobalNavbarProps> = ({ onEnterExperience })
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-[background-color,border-color,box-shadow] duration-300 ${
-        isScrolled || menuOpen ? 'bg-tv-canvas/90 backdrop-blur-xl border-b border-tv-line' : 'bg-transparent border-b border-transparent'
+        isScrolled || menuOpen ? 'bg-tv-canvas/95 backdrop-blur-xl border-b border-tv-line' : 'bg-transparent border-b border-transparent'
       }`}
     >
       <div className="mx-auto flex h-16 sm:h-[72px] max-w-6xl items-center justify-between gap-4 px-4 sm:px-8">

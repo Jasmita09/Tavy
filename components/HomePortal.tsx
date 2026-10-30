@@ -8,6 +8,9 @@ import { GoldenHero } from './golden/GoldenHero';
 import { GoldenJourney, webglAvailable } from './golden/GoldenJourney';
 import { GoldenGateBackdrop } from './golden/GoldenGate';
 import { MotionToggle } from './golden/MotionToggle';
+import { GoldenWaves, HaloSilhouette } from './golden/HaloAssembly';
+import { useScrollProgress } from './golden/useScrollProgress';
+import { FeelTheInvisible } from './feel/FeelTheInvisible';
 import { goToSection } from './GlobalNavbar';
 import { Button, buttonClass } from './ui/Button';
 import { Accent, SectionHeading } from './ui/SectionHeading';
@@ -30,24 +33,6 @@ const ACCESS_FEATURES = [
   { icon: Captions, title: 'Lyrics', body: 'Lyrics and captions timed to the performance, where available.' },
   { icon: SlidersHorizontal, title: 'Personalize', body: 'Reduce Motion, High Contrast and sensory settings, shared by both modes.' },
 ];
-
-/* ---------- 3. Accessibility: a static beat-cue illustration ---------- */
-const BeatCue: React.FC = () => (
-  <figure className="relative m-0 overflow-hidden rounded-tv-xl bg-tv-navy p-8 sm:p-10 text-white">
-    <div aria-hidden="true" className="relative mx-auto flex aspect-square max-w-[19rem] items-center justify-center">
-      {[1, 0.78, 0.56].map((size, i) => (
-        <span
-          key={size}
-          className="absolute rounded-full border"
-          style={{ width: `${size * 100}%`, height: `${size * 100}%`, borderColor: `rgb(201 160 99 / ${0.25 + i * 0.2})` }}
-        />
-      ))}
-      <span className="absolute size-[34%] rounded-full bg-gradient-to-br from-tv-blush via-tv-accent to-tv-peach opacity-90" />
-      <span className="relative text-5xl sm:text-6xl font-black tracking-[0.08em]">DROP</span>
-    </div>
-    <figcaption className="mt-6 text-center text-sm text-white/75">A visual beat cue, as shown in Live Concert.</figcaption>
-  </figure>
-);
 
 /* ---------- 5. Beyond the concert: small illustrations ---------- */
 const TicketArt: React.FC = () => (
@@ -103,6 +88,11 @@ export const HomePortal: React.FC<HomePortalProps> = ({
   const gateRef = useRef<HTMLDivElement>(null);
   const experienceRef = useRef<HTMLElement>(null);
   const showToggle = use3d && !reduced;
+  // Halo assembly: golden waves and the silhouette, then the model (scroll-linked, written as --halo-p)
+  const haloRef = useRef<HTMLElement>(null);
+  const haloViewerRef = useRef<HTMLDivElement>(null);
+  const [assembled, setAssembled] = useState(false);
+  useScrollProgress(haloRef, haloRef, haloViewerRef, { name: '--halo-p', endLine: 0.6, still: reduced || !use3d });
 
   return (
     // isolate: the fixed journey layer (z-0) sits above the page background and below the content
@@ -186,14 +176,21 @@ export const HomePortal: React.FC<HomePortalProps> = ({
             </p>
           </Reveal>
           <Reveal delay={0.1}>
-            <BeatCue />
+            <FeelTheInvisible reduced={reduced} motionOn={motionOn} onToggleMotion={toggleMotion} />
           </Reveal>
         </div>
       </section>
 
       {/* 4. Halo haptic concept */}
-      <section id="halo" aria-labelledby="halo-title" className={`relative z-[1] ${SECTION_Y} scroll-mt-16 bg-tv-canvas`}>
-        <div className={`${CONTAINER} grid items-center gap-12 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-16`}>
+      <section
+        ref={haloRef}
+        id="halo"
+        aria-labelledby="halo-title"
+        data-assembled={assembled || undefined}
+        className={`tv-halo-assembly relative z-[1] ${SECTION_Y} scroll-mt-16 bg-tv-canvas`}
+      >
+        {use3d && <GoldenWaves sectionRef={haloRef} stageRef={haloViewerRef} />}
+        <div className={`${CONTAINER} relative grid items-center gap-12 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-16`}>
           <Reveal className="space-y-6">
             <SectionHeading
               id="halo-title"
@@ -215,7 +212,11 @@ export const HomePortal: React.FC<HomePortalProps> = ({
             </button>
           </Reveal>
           <Reveal delay={0.1}>
-            <HaloViewer conceptId={haloConceptId} deferUntilVisible />
+            {/* Touching or focusing the viewer completes the assembly at once, so nothing waits on the animation */}
+            <div ref={haloViewerRef} className="relative" onPointerDownCapture={() => setAssembled(true)} onFocusCapture={() => setAssembled(true)}>
+              <HaloViewer conceptId={haloConceptId} deferUntilVisible />
+              {use3d && !reduced && !assembled && <HaloSilhouette />}
+            </div>
           </Reveal>
         </div>
       </section>

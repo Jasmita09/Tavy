@@ -239,3 +239,35 @@ html[data-reduced-motion="true"] *::after {
   from { opacity: 0; transform: translateY(14px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* ---------- Feel the Invisible (landing): slow cue visuals, never flashing ---------- */
+@keyframes tv-cue-ring {
+  0% { transform: scale(0.55); opacity: 0.85; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+@keyframes tv-cue-bass {
+  0%, 100% { transform: rotate(45deg) scale(0.92); }
+  50% { transform: rotate(45deg) scale(1.06); }
+}
+@keyframes tv-cue-build {
+  0% { transform: scale(0.82); opacity: 0.15; }
+  50% { opacity: 0.85; }
+  100% { transform: scale(1.18); opacity: 0.15; }
+}
+@keyframes tv-cue-drop {
+  0% { transform: scale(0.4); opacity: 0; }
+  45% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.9; }
+}
+.tv-cue-ring { animation: tv-cue-ring 1.8s cubic-bezier(0.2, 0.6, 0.3, 1) infinite; }
+.tv-cue-bass { animation: tv-cue-bass 2.8s ease-in-out infinite; }
+.tv-cue-build { animation: tv-cue-build 3.2s ease-in-out infinite; }
+.tv-cue-drop { animation: tv-cue-drop 1.6s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.tv-cue-paused * { animation-play-state: paused !important; }
+
+/* ---------- Halo assembly (landing): the model fades in as the golden waves arrive ---------- */
+.tv-halo-assembly:not([data-assembled]) [aria-label="Halo concept model, 3D view"] canvas {
+  --tv-model: clamp(0, calc((var(--halo-p, 1) - 0.55) / 0.33), 1);
+  opacity: var(--tv-model);
+  transform: scale(calc(0.94 + 0.06 * var(--tv-model)));
+}
