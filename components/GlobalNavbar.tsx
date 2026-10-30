@@ -2,6 +2,7 @@ import React, { useEffect, useId, useRef, useState } from 'react';
 import { ArrowRight, Menu, X } from 'lucide-react';
 import { buttonClass } from './ui/Button';
 import { FOCUS_LIGHT } from './ui/tokens';
+import { SoundToggle } from './audio/SoundControls';
 
 /** Landing-page sections the navigation can reach. Each id exists in HomePortal. */
 export const NAV_SECTIONS = [
@@ -96,6 +97,12 @@ export const GlobalNavbar: React.FC<GlobalNavbarProps> = ({ onEnterExperience, o
         </nav>
 
         <div className="flex items-center gap-2">
+          <span className="hidden sm:inline-flex">
+            <SoundToggle />
+          </span>
+          <span className="sm:hidden">
+            <SoundToggle compact />
+          </span>
           <button onClick={onEnterExperience} className={`${buttonClass('primary')} hidden sm:inline-flex`}>
             Enter Experience
             <ArrowRight className="w-4 h-4" aria-hidden="true" />

@@ -13,6 +13,7 @@ import { ConcertErrorBoundary } from './components/experience/ConcertErrorBounda
 import { useAppView, type AppView } from './hooks/useAppView';
 import { momentPrefill, type MemoryPrefill } from './components/memory/moment';
 import { companionTabSlug } from './components/companionTabs';
+import { stopAll } from './components/audio/soundEngine';
 import type { ToolTarget } from './components/home/CompanionTools';
 
 // The concert modes (ported from AuraBeat) load on demand so the landing page stays light.
@@ -35,6 +36,12 @@ const AppContent: React.FC = () => {
   };
   useEffect(() => {
     if (view !== 'memory-book') setMoment(null);
+  }, [view]);
+
+  // The Golden Symphony's music belongs to the landing page: leaving it (for a concert, the Companion
+  // App, anything) silences it at once, so it never plays over a concert's own sound.
+  useEffect(() => {
+    if (view !== 'website') stopAll();
   }, [view]);
 
   // A tool opened from the Accessibility section: remember the link used, so coming back (the back

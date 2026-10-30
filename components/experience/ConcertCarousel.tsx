@@ -17,6 +17,8 @@ export interface ConcertMode {
   scene: 'live' | 'home';
   /** An illustrated world shown instead of the photo (it labels itself as an image). */
   art?: React.ReactNode;
+  /** An optional extra action beside Start (the sound Preview). */
+  preview?: React.ReactNode;
   onSelect: () => void;
 }
 
@@ -253,17 +255,20 @@ export const ConcertCarousel: React.FC<ConcertCarouselProps> = ({ modes, titleAs
                         </li>
                       ))}
                     </ul>
-                    <button
-                      ref={(el) => {
-                        startRefs.current[i] = el;
-                      }}
-                      onClick={mode.onSelect}
-                      aria-describedby={descriptionId}
-                      className={`${buttonClass('primary')} mt-auto self-start focus:outline-none`}
-                    >
-                      Start {mode.title}
-                      <ArrowRight className="w-4 h-4" aria-hidden="true" />
-                    </button>
+                    <div className="mt-auto flex flex-wrap items-center gap-2">
+                      <button
+                        ref={(el) => {
+                          startRefs.current[i] = el;
+                        }}
+                        onClick={mode.onSelect}
+                        aria-describedby={descriptionId}
+                        className={`${buttonClass('primary')} self-start focus:outline-none`}
+                      >
+                        Start {mode.title}
+                        <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                      </button>
+                      {mode.preview}
+                    </div>
                   </div>
                 </article>
               </motion.div>

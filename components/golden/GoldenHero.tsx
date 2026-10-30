@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowDown, ArrowRight, Play } from 'lucide-react';
+import { ArrowDown, ArrowRight, Music2, Play } from 'lucide-react';
+import { NOTE_TAP_SCALE } from '../audio/score';
+import { noteTap } from '../audio/soundEngine';
+import { useSound } from '../audio/useSound';
 import { Button } from '../ui/Button';
 import { Accent } from '../ui/SectionHeading';
 import { CONTAINER, EYEBROW, FOCUS_LIGHT, MOTION } from '../ui/tokens';
@@ -29,6 +32,25 @@ interface GoldenHeroProps {
 }
 
 export const GoldenHero: React.FC<GoldenHeroProps> = ({ reduced, use3d, motionOn, onToggleMotion, artRef, onExplore, onDiscover, onWatchStory }) => {
+  // Living notes: with the music on, a deliberate tap (not hover, not a scroll) in the notes' space plays a
+  // soft bell in the soundtrack's key, with a ripple where it was touched. Keyboard: "Play a note".
+  const sound = useSound();
+  const [ripples, setRipples] = useState<{ id: number; x: number; y: number }[]>([]);
+  const rippleId = useRef(0);
+  const nextNote = useRef(0);
+  const playNote = (index: number, x: number, y: number) => {
+    if (!noteTap(index)) return;
+    const id = ++rippleId.current;
+    setRipples((r) => [...r.slice(-4), { id, x, y }]);
+    window.setTimeout(() => setRipples((r) => r.filter((p) => p.id !== id)), 1200);
+  };
+  const onArtClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!sound.site) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    const fx = (e.clientX - r.left) / r.width;
+    playNote(Math.floor(fx * NOTE_TAP_SCALE.length), e.clientX - r.left, e.clientY - r.top);
+  };
+
   const enter = (delay: number) =>
     reduced ? {} : { initial: { opacity: 0, y: 18 }, animate: { opacity: 1, y: 0 }, transition: { duration: MOTION.slow, ease: MOTION.ease, delay } };
 
@@ -77,9 +99,9 @@ export const GoldenHero: React.FC<GoldenHeroProps> = ({ reduced, use3d, motionOn
                 <span className="inline-flex size-10 items-center justify-center rounded-full border border-tv-accent/60 bg-tv-paper text-tv-accent-ink shadow-tv-soft transition-colors group-hover:bg-tv-mist">
                   <Play className="w-4 h-4 translate-x-px" aria-hidden="true" />
                 </span>
-                <span>
+                <span className="text-left">
                   Watch Our Story
-                  <span className="block text-xs font-normal text-tv-slate">A one-minute silent story, with captions</span>
+                  <span className="block text-xs font-normal text-tv-slate">A 30-second story · sound optional, always captioned</span>
                 </span>
               </button>
             </motion.div>
@@ -91,9 +113,41 @@ export const GoldenHero: React.FC<GoldenHeroProps> = ({ reduced, use3d, motionOn
             Each note, a new possibility.
           </p>
           {/* The silk is drawn into this box by the journey layer; the box only reserves its space */}
-          <div ref={artRef} className="relative h-[290px] sm:h-[440px] lg:h-[540px] -mx-4 sm:mx-0">
+          {/* Taps here are optional and only make sound with the music on; nothing here is a control */}
+          <div
+            ref={artRef}
+            onClick={onArtClick}
+            className={`relative h-[290px] sm:h-[440px] lg:h-[540px] -mx-4 sm:mx-0 ${sound.site ? 'cursor-pointer' : ''}`}
+          >
             {!use3d && <StillNotes />}
+            {ripples.map((p) => (
+              <span
+                key={p.id}
+                aria-hidden="true"
+                className="tv-note-ripple pointer-events-none absolute size-40 rounded-full border border-tv-accent/70 bg-[radial-gradient(circle,rgb(246_220_169/0.45),rgb(246_220_169/0)_65%)]"
+                style={{ left: p.x, top: p.y }}
+              />
+            ))}
           </div>
+          {sound.site && (
+            <div className="mt-2 flex justify-center lg:justify-end">
+              <button
+                type="button"
+                onClick={(e) => {
+                  const box = artRef.current?.getBoundingClientRect();
+                  const i = nextNote.current++ % NOTE_TAP_SCALE.length;
+                  // Keyboard presses ripple across the notes' space, left to right
+                  if (box) playNote(i, ((i + 0.5) / NOTE_TAP_SCALE.length) * box.width, box.height * 0.5);
+                  (e.currentTarget as HTMLButtonElement).focus();
+                }}
+                className={`inline-flex min-h-11 items-center gap-2 rounded-full px-3 text-sm font-semibold text-tv-accent-ink hover:bg-tv-mist cursor-pointer ${FOCUS_LIGHT}`}
+              >
+                <Music2 className="w-4 h-4" aria-hidden="true" />
+                Play a note
+                <span className="sr-only">(or tap the golden notes)</span>
+              </button>
+            </div>
+          )}
           {use3d && !reduced && (
             <div className="mt-2 flex justify-center lg:justify-end">
               <MotionToggle motionOn={motionOn} onToggle={onToggleMotion} />

@@ -88,3 +88,14 @@ html[data-reduced-motion="true"] .tvs-draw { stroke-dashoffset: 0; }
 /* High Contrast: stronger outlines around the picture and the scene markers */
 html[data-contrast="high"] .tvs-frame { outline: 2px solid rgb(23 21 46); outline-offset: 2px; }
 html[data-contrast="high"] .tvs-segment { background: rgb(23 21 46 / 0.35); }
+
+/* Light that breathes on the beat (--tvs-beat, 0–1, set every frame from the story's clock). A slow
+   swell well under three per second, never a flash; off when still or with reduced motion. */
+.tvs-beat-glow {
+  background: radial-gradient(ellipse at var(--tvs-glow-at, 50% 50%), rgb(246 220 169 / 0.9), rgb(235 196 192 / 0.25) 35%, transparent 65%);
+  mix-blend-mode: soft-light;
+  opacity: calc(var(--tvs-beat, 0) * 0.55);
+}
+.tvs-still .tvs-beat-glow { opacity: 0; }
+@media (prefers-reduced-motion: reduce) { .tvs-beat-glow { opacity: 0 !important; } }
+html[data-reduced-motion="true"] .tvs-beat-glow { opacity: 0 !important; }

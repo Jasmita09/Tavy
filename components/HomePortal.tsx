@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useCallback, useId, useRef, useState } from 'react';
+import React, { lazy, Suspense, useCallback, useEffect, useId, useRef, useState } from 'react';
 import { ArrowRight, AudioWaveform, Captions, SlidersHorizontal, Vibrate } from 'lucide-react';
 import { useReducedMotionPreference } from '../hooks/useReducedMotionPreference';
 import { ConcertCarousel } from './experience/ConcertCarousel';
@@ -11,6 +11,7 @@ import { MotionToggle } from './golden/MotionToggle';
 import { GoldenWaves, HaloSilhouette } from './golden/HaloAssembly';
 import { useScrollProgress } from './golden/useScrollProgress';
 import { FeelTheInvisible } from './feel/FeelTheInvisible';
+import { gateProgress } from './audio/soundEngine';
 import { CompanionTools, type ToolTarget } from './home/CompanionTools';
 import { goToSection } from './GlobalNavbar';
 import { Button, buttonClass } from './ui/Button';
@@ -102,6 +103,13 @@ export const HomePortal: React.FC<HomePortalProps> = ({
   const haloViewerRef = useRef<HTMLDivElement>(null);
   const [assembled, setAssembled] = useState(false);
   const [storyOpen, setStoryOpen] = useState(false);
+  // Without WebGL there's no scroll journey: the gate's shimmer follows the concert cards coming into view
+  useEffect(() => {
+    if (use3d || !gateRef.current || typeof IntersectionObserver === 'undefined') return;
+    const io = new IntersectionObserver(([e]) => gateProgress(e.intersectionRatio > 0.6 ? 1 : e.isIntersecting ? 0.7 : 0), { threshold: [0, 0.6, 1] });
+    io.observe(gateRef.current);
+    return () => io.disconnect();
+  }, [use3d]);
   useScrollProgress(haloRef, haloRef, haloViewerRef, { name: '--halo-p', endLine: 0.6, still: reduced || !use3d });
 
   return (

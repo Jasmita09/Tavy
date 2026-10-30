@@ -1,0 +1,20 @@
+TΛVY Golden Symphony audio — provenance and license
+
+Files (AAC in .m4a, 44.1 kHz stereo):
+  sound-of-dreams.m4a       33.0 s  "The Sound of Dreams", the optional story's soundtrack (12 bars at 96 BPM + the last chord ringing out)
+  golden-overture-loop.m4a  20.0 s  Landing page music, 8 bars that loop seamlessly; plays only after "Sound on"
+  golden-gate-cue.m4a        4.0 s  Golden Gate shimmer, played once over the landing music when the gate is reached
+  preview-live.m4a           6.0 s  Live Concert sound preview (crowd, four-on-the-floor groove, bright chords)
+  preview-home.m4a           6.0 s  At-home Concert sound preview (warm keys, soft beat)
+
+Source: original music composed for TΛVY and synthesised from scratch by scripts/audio/render-soundtrack.mts
+(additive piano and bells, detuned-saw pads, sine bass, synthesised drums, filtered-noise rain, crowd and
+risers, a Freeverb-style reverb). No samples, loops, recordings, presets or third-party melodies are used;
+the motif and chord progressions were written for this project. The note taps on the landing page are
+synthesised live in the browser from the same bell recipe.
+
+Reproduce: node scripts/audio/render-soundtrack.mts  (deterministic; encodes with macOS afconvert)
+Timing: components/audio/score.ts (shared by the renderer and the site, so visuals and music stay in step)
+
+License: created for the TΛVY project by its contributors; no third-party rights. The project owner may
+license it as they choose.

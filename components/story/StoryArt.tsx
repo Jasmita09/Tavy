@@ -231,6 +231,8 @@ export interface StoryScene {
   detail: string;
   /** What the picture shows, for screen readers and the text version. */
   description: string;
+  /** What the soundtrack does in this scene, in words (shown with or without sound). */
+  sound: string;
   /** Where the slow camera move heads (CSS transform-origin), and how far it drifts. */
   camera: { origin: string; dx: string; dy: string };
   Art: React.FC;
@@ -245,6 +247,7 @@ export const STORY_SCENES: StoryScene[] = [
     caption: 'For three years, she has waited for this concert.',
     detail: 'Tonight, a storm has closed every road between her home and the stadium.',
     description: 'A fan sits on a window seat at dusk, seen from behind, an unlit lightstick across her knees. Rain runs down the window. On the wall: a concert poster, a calendar with tonight circled, and her ticket.',
+    sound: 'Soft, slow piano and gentle rain on the window.',
     camera: { origin: '72% 48%', dx: '-1.5%', dy: '0%' },
     Art: () => <Room />,
   },
@@ -254,6 +257,7 @@ export const STORY_SCENES: StoryScene[] = [
     caption: 'Then a golden ribbon of music drifts into her room.',
     detail: 'It circles her gently, and the tip of her lightstick begins to glow.',
     description: 'A thin golden ribbon flows in through the window, loops around the fan and trails across the room with a few musical notes. The room turns warm, and her lightstick glows.',
+    sound: 'A golden chime rings, the rain fades, and a warm melody begins on bells.',
     camera: { origin: '58% 52%', dx: '1.5%', dy: '-1%' },
     Art: () => <Room invite />,
   },
@@ -263,6 +267,7 @@ export const STORY_SCENES: StoryScene[] = [
     caption: 'It leads her to a gate made of music.',
     detail: 'The same Golden Gate that opens every TΛVY concert.',
     description: 'On a warm ivory horizon, the golden ribbon flows into a tall gold-and-blush arch with notes resting on it. Light glows inside the gate, and the fan walks towards it, lightstick in hand.',
+    sound: 'A shimmer of rising bells as the gate opens; a heartbeat drum and the melody build.',
     camera: { origin: '50% 62%', dx: '0%', dy: '-1.5%' },
     Art: Gate,
   },
@@ -272,6 +277,7 @@ export const STORY_SCENES: StoryScene[] = [
     caption: 'The lights, the lyrics and every beat reach her at home.',
     detail: 'Through the At-home Concert, she is part of the night.',
     description: 'In a cosy room in the evening, the concert plays on the screen, its golden light filling the room. The fan sits on the sofa, her lightstick raised with the music.',
+    sound: 'The full band and a cheering crowd; the melody soars, then settles on one warm chord.',
     camera: { origin: '55% 45%', dx: '0%', dy: '0%' },
     Art: () => (
       <div aria-hidden="true" className="h-full w-full">
