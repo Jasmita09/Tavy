@@ -15,6 +15,8 @@ export interface ConcertMode {
   highlights: string[];
   /** Which decorative scene is layered over the card image. */
   scene: 'live' | 'home';
+  /** An illustrated world shown instead of the photo (it labels itself as an image). */
+  art?: React.ReactNode;
   onSelect: () => void;
 }
 
@@ -197,8 +199,9 @@ export const ConcertCarousel: React.FC<ConcertCarouselProps> = ({ modes, titleAs
                   opacity: 1 - Math.min(distance, 1) * 0.45,
                 }}
                 transition={spring}
-                className="relative w-[min(84vw,30rem)]"
-                style={{ zIndex: active ? 2 : 1, transformStyle: 'preserve-3d' }}
+                className="relative"
+                // Width inline (not a runtime-generated Tailwind class) so the first measurement of the card is already right
+                style={{ width: 'min(84vw, 30rem)', zIndex: active ? 2 : 1, transformStyle: 'preserve-3d' }}
               >
                 {/* Off-centre cards: a tap or click brings them forward (keyboard users have the arrows and dots) */}
                 {!active && (
@@ -219,9 +222,13 @@ export const ConcertCarousel: React.FC<ConcertCarouselProps> = ({ modes, titleAs
                   }`}
                 >
                   <div className="relative aspect-[16/10] overflow-hidden">
-                    <img src={mode.image} alt={mode.imageAlt} draggable={false} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03] motion-reduce:transition-none" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-tv-navy/45 via-transparent to-transparent" />
-                    <SceneLayer scene={mode.scene} />
+                    {mode.art ?? (
+                      <>
+                        <img src={mode.image} alt={mode.imageAlt} draggable={false} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03] motion-reduce:transition-none" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-tv-navy/45 via-transparent to-transparent" />
+                        <SceneLayer scene={mode.scene} />
+                      </>
+                    )}
                     {/* Glass sheen that glides across on hover */}
                     <span
                       aria-hidden="true"

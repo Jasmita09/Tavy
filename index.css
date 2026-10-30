@@ -271,3 +271,32 @@ html[data-reduced-motion="true"] *::after {
   opacity: var(--tv-model);
   transform: scale(calc(0.94 + 0.06 * var(--tv-model)));
 }
+
+/* ---------- Concert worlds (experience cards): brief, gentle motion ---------- */
+@keyframes tv-world-sweep {
+  from { transform: rotate(-7deg); }
+  to { transform: rotate(7deg); }
+}
+@keyframes tv-world-sway {
+  from { transform: rotate(-6deg); }
+  to { transform: rotate(5deg); }
+}
+@keyframes tv-world-breathe {
+  from { transform: scale(0.96); }
+  to { transform: scale(1.04); }
+}
+.tv-world .tv-anim {
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  animation-timing-function: ease-in-out;
+  animation-play-state: paused;
+  transform-box: fill-box;
+}
+.tv-world-sweep { animation-name: tv-world-sweep; transform-origin: top center; }
+.tv-world-sway { animation-name: tv-world-sway; transform-origin: bottom center; }
+.tv-world-breathe { animation-name: tv-world-breathe; transform-origin: center; }
+/* Plays only for a moment after the card appears, or while the pointer rests on it */
+.tv-world[data-playing] .tv-anim { animation-play-state: running; }
+/* The landing page's Pause motion toggle */
+[data-motion="off"] .tv-world .tv-anim { animation-play-state: paused; }
+.tv-world-still .tv-anim { animation: none; }

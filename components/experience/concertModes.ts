@@ -1,4 +1,6 @@
+import { createElement } from 'react';
 import { Home, Ticket } from 'lucide-react';
+import { HomeWorld, LiveWorld } from '../worlds/ConcertWorlds';
 import type { ConcertMode } from './ConcertCarousel';
 import liveCrowdImg from '../../src/assets/images/web/live-crowd.jpg';
 import homePerformerImg from '../../src/assets/images/web/home-performer.jpg';
@@ -14,6 +16,7 @@ export const concertModes = (onSelectLive: () => void, onSelectHome: () => void)
     tagline: 'Feel alive at concert.',
     image: liveCrowdImg,
     imageAlt: 'A crowd holding up lights in front of a bright arena stage',
+    art: createElement(LiveWorld),
     icon: Ticket,
     scene: 'live',
     highlights: ['Phone lightstick', 'Visual beat cues', 'BASS · BUILD · CHORUS · DROP', 'Optional haptics'],
@@ -25,6 +28,7 @@ export const concertModes = (onSelectLive: () => void, onSelectHome: () => void)
     tagline: 'Feel the concert at home.',
     image: homePerformerImg,
     imageAlt: 'A singer performing on stage, as seen on a concert stream',
+    art: createElement(HomeWorld),
     icon: Home,
     scene: 'home',
     highlights: ['Concert video', 'Synced lyrics', 'Virtual stage', 'Tap to Wave', 'Timing score'],

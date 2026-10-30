@@ -134,7 +134,12 @@ export const HomePortal: React.FC<HomePortalProps> = ({
               }
             />
           </Reveal>
-          <div ref={gateRef} className="relative mt-28 sm:mt-32" style={{ '--gate-light': 1 } as React.CSSProperties}>
+          <div
+            ref={gateRef}
+            data-motion={motionOn ? undefined : 'off'}
+            className="relative mt-28 sm:mt-32"
+            style={{ '--gate-light': 1 } as React.CSSProperties}
+          >
             <GoldenGateBackdrop drawArch={!use3d} />
             <div className="relative">
               <ConcertCarousel modes={concertModes(onSelectLiveVenue, onSelectAtHome)} titleAs="h3" />
