@@ -1,10 +1,13 @@
-import React, { useId, useState } from 'react';
+import React, { useCallback, useId, useRef, useState } from 'react';
 import { ArrowRight, AudioWaveform, Captions, SlidersHorizontal, Vibrate } from 'lucide-react';
 import { useReducedMotionPreference } from '../hooks/useReducedMotionPreference';
 import { ConcertCarousel } from './experience/ConcertCarousel';
 import { concertModes } from './experience/concertModes';
 import { HaloViewer } from './halo/HaloViewer';
 import { GoldenHero } from './golden/GoldenHero';
+import { GoldenJourney, webglAvailable } from './golden/GoldenJourney';
+import { GoldenGateBackdrop } from './golden/GoldenGate';
+import { MotionToggle } from './golden/MotionToggle';
 import { goToSection } from './GlobalNavbar';
 import { Button, buttonClass } from './ui/Button';
 import { Accent, SectionHeading } from './ui/SectionHeading';
@@ -92,13 +95,43 @@ export const HomePortal: React.FC<HomePortalProps> = ({
 }) => {
   const reduced = useReducedMotionPreference();
   const haloConceptId = useId();
+  // One shared golden journey: silk in the hero, notes travelling to the gate around the concert carousel.
+  const [use3d, setUse3d] = useState(webglAvailable);
+  const [motionOn, setMotionOn] = useState(true);
+  const toggleMotion = useCallback(() => setMotionOn((on) => !on), []);
+  const artRef = useRef<HTMLDivElement>(null);
+  const gateRef = useRef<HTMLDivElement>(null);
+  const experienceRef = useRef<HTMLElement>(null);
+  const showToggle = use3d && !reduced;
 
   return (
-    <div className="w-full">
-      <GoldenHero reduced={reduced} onExplore={() => goToSection('experience')} onDiscover={() => goToSection('accessibility')} />
+    // isolate: the fixed journey layer (z-0) sits above the page background and below the content
+    <div className="relative isolate w-full">
+      {use3d && (
+        <GoldenJourney
+          artRef={artRef}
+          gateRef={gateRef}
+          endRef={experienceRef}
+          motionOn={motionOn}
+          reduced={reduced}
+          onUnavailable={() => setUse3d(false)}
+        />
+      )}
 
-      {/* 2. The two concert experiences */}
-      <section id="experience" aria-labelledby="experience-title" className={`${SECTION_Y} scroll-mt-16`}>
+      <div className="relative">
+        <GoldenHero
+          reduced={reduced}
+          use3d={use3d}
+          motionOn={motionOn}
+          onToggleMotion={toggleMotion}
+          artRef={artRef}
+          onExplore={() => goToSection('experience')}
+          onDiscover={() => goToSection('accessibility')}
+        />
+      </div>
+
+      {/* 2. The two concert experiences, revealed by the golden gate */}
+      <section ref={experienceRef} id="experience" aria-labelledby="experience-title" className={`relative ${SECTION_Y} scroll-mt-16`}>
         <div className={CONTAINER}>
           <Reveal>
             <SectionHeading
@@ -111,14 +144,22 @@ export const HomePortal: React.FC<HomePortalProps> = ({
               }
             />
           </Reveal>
-          <div className="mt-10 sm:mt-12">
-            <ConcertCarousel modes={concertModes(onSelectLiveVenue, onSelectAtHome)} titleAs="h3" />
+          <div ref={gateRef} className="relative mt-28 sm:mt-32" style={{ '--gate-light': 1 } as React.CSSProperties}>
+            <GoldenGateBackdrop drawArch={!use3d} />
+            <div className="relative">
+              <ConcertCarousel modes={concertModes(onSelectLiveVenue, onSelectAtHome)} titleAs="h3" />
+            </div>
           </div>
+          {showToggle && (
+            <div className="relative mt-6 flex justify-center">
+              <MotionToggle motionOn={motionOn} onToggle={toggleMotion} />
+            </div>
+          )}
         </div>
       </section>
 
       {/* 3. Accessibility for everyone */}
-      <section id="accessibility" aria-labelledby="accessibility-title" className={`${SECTION_Y} scroll-mt-16 bg-tv-paper`}>
+      <section id="accessibility" aria-labelledby="accessibility-title" className={`relative z-[1] ${SECTION_Y} scroll-mt-16 bg-tv-paper`}>
         <div className={`${CONTAINER} grid items-center gap-12 lg:grid-cols-2 lg:gap-20`}>
           <Reveal className="space-y-10">
             <SectionHeading
@@ -151,7 +192,7 @@ export const HomePortal: React.FC<HomePortalProps> = ({
       </section>
 
       {/* 4. Halo haptic concept */}
-      <section id="halo" aria-labelledby="halo-title" className={`${SECTION_Y} scroll-mt-16`}>
+      <section id="halo" aria-labelledby="halo-title" className={`relative z-[1] ${SECTION_Y} scroll-mt-16 bg-tv-canvas`}>
         <div className={`${CONTAINER} grid items-center gap-12 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-16`}>
           <Reveal className="space-y-6">
             <SectionHeading
@@ -180,7 +221,7 @@ export const HomePortal: React.FC<HomePortalProps> = ({
       </section>
 
       {/* 5. Beyond the concert */}
-      <section id="memories" aria-labelledby="memories-title" className={`${SECTION_Y} scroll-mt-16 bg-tv-paper`}>
+      <section id="memories" aria-labelledby="memories-title" className={`relative z-[1] ${SECTION_Y} scroll-mt-16 bg-tv-paper`}>
         <div className={CONTAINER}>
           <Reveal>
             <SectionHeading
@@ -242,7 +283,7 @@ export const HomePortal: React.FC<HomePortalProps> = ({
       </section>
 
       {/* 6. Final call to action */}
-      <section aria-labelledby="final-title" className="py-20 sm:py-28">
+      <section aria-labelledby="final-title" className="relative z-[1] py-20 sm:py-28 bg-tv-canvas">
         <div className={CONTAINER}>
           <Reveal>
             <div className="relative overflow-hidden rounded-tv-xl bg-tv-navy">
