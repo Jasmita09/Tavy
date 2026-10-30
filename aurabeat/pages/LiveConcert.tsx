@@ -65,115 +65,127 @@ export default function LiveConcert({ onExit, onSwitchMode }: LiveConcertProps) 
     settings.watchHaptics ? "Haptics on" : "Haptics off",
   ].join(" · ");
 
+  const showLightstick = lightstickOpen && session.active;
+
   return (
     <div className="concert-root min-h-dvh overflow-x-clip bg-stage text-ink">
-      <div className="mx-auto flex min-h-dvh w-full max-w-xl flex-col px-5 py-6 sm:px-8">
+      {/* Inert under the full-screen lightstick: without element full screen (iPhone), Tab would
+          otherwise land on controls hidden behind it. */}
+      <div inert={showLightstick} className="mx-auto flex min-h-dvh w-full max-w-xl flex-col px-5 py-6 sm:px-8">
         <ScreenHeader label="Live Concert" onExit={exit} switchTo={{ label: "At-home", onSelect: switchMode }} />
 
-        <p className="mt-6 text-lg text-ink-muted">Keep your eyes on the stage. TΛVY stays in your pocket.</p>
+        <main>
+          <p className="mt-6 text-lg text-ink-muted">Keep your eyes on the stage. TΛVY stays in your pocket.</p>
 
-        {/* Primary action */}
-        <div className="mt-6">
-          {!session.active ? (
-            <button
-              type="button"
-              onClick={start}
-              className="flex min-h-20 w-full flex-col items-center justify-center rounded-3xl bg-aura text-stage transition hover:brightness-110"
-            >
-              <span className="font-display text-2xl font-bold">Start live mode</span>
-              <span className="text-sm font-semibold opacity-80">
-                {settings.lightstick ? "Your screen becomes a lightstick" : "Haptics and cues only"}
-              </span>
-            </button>
-          ) : (
-            <div className="grid grid-cols-[1fr_auto] gap-3">
+          {/* Primary action */}
+          <div className="mt-6">
+            {!session.active ? (
               <button
-                ref={openButtonRef}
                 type="button"
-                onClick={() => setLightstickOpen(true)}
-                disabled={!settings.lightstick}
-                className="min-h-20 rounded-3xl border border-aura/60 bg-aura/15 font-display text-xl font-bold text-aura disabled:border-white/10 disabled:bg-transparent disabled:text-ink-muted"
+                onClick={start}
+                className="flex min-h-20 w-full flex-col items-center justify-center rounded-3xl bg-aura text-stage transition hover:brightness-110"
               >
-                {settings.lightstick ? "Open lightstick" : "Lightstick off"}
+                <span className="font-display text-2xl font-bold">Start live mode</span>
+                <span className="text-sm font-semibold opacity-80">
+                  {settings.lightstick ? "Your screen becomes a lightstick" : "Haptics and cues only"}
+                </span>
               </button>
-              <button type="button" onClick={stop} className="min-h-20 rounded-3xl bg-alert px-8 font-display text-xl font-bold text-stage">
-                Stop
-              </button>
-            </div>
-          )}
-          {session.active && (
-            <p className="mt-2 text-center text-sm text-ink-muted">
-              Live mode is on{settings.watchHaptics ? " · haptics on" : ""}. Stop ends it immediately.
-            </p>
-          )}
-        </div>
+            ) : (
+              <div className="grid grid-cols-[1fr_auto] gap-3">
+                <button
+                  ref={openButtonRef}
+                  type="button"
+                  onClick={() => setLightstickOpen(true)}
+                  disabled={!settings.lightstick}
+                  className="min-h-20 rounded-3xl border border-aura/60 bg-aura/15 font-display text-xl font-bold text-aura disabled:border-white/10 disabled:bg-transparent disabled:text-ink-muted"
+                >
+                  {settings.lightstick ? "Open lightstick" : "Lightstick off"}
+                </button>
+                <button type="button" onClick={stop} className="min-h-20 rounded-3xl bg-alert px-8 font-display text-xl font-bold text-stage">
+                  Stop
+                </button>
+              </div>
+            )}
+            {session.active && (
+              <p className="mt-2 text-center text-sm text-ink-muted">
+                Live mode is on{settings.watchHaptics ? " · haptics on" : ""}. Stop ends it immediately.
+              </p>
+            )}
+          </div>
 
-        <div className="mt-6 flex flex-col gap-4">
-          <LiveStatusPanel connection={connection} watch={watch} />
+          <div className="mt-6 flex flex-col gap-4">
+            <LiveStatusPanel connection={connection} watch={watch} />
 
-          {settings.cues && session.active && (
-            <LiveCueDisplay cue={session.lastCue} beats={session.beats} variant="card" reducedMotion={reducedMotion} />
-          )}
+            {settings.cues && session.active && (
+              <LiveCueDisplay
+                cue={session.lastCue}
+                beats={session.beats}
+                variant="card"
+                reducedMotion={reducedMotion}
+                announce={!showLightstick}
+              />
+            )}
 
-          <section aria-label="Live settings" className="rounded-3xl border border-white/10 bg-surface p-3">
-            <SensoryToggle
-              label="Lightstick"
-              description="Your screen glows with the music."
-              checked={settings.lightstick}
-              onChange={() => toggle("lightstick")}
-            />
-            <SensoryToggle
-              label="Haptics"
-              description={
-                phoneCanVibrate
-                  ? "Your phone vibrates on the beat and big moments (no Halo needed)."
-                  : "This browser can't vibrate — follow the light and cue words instead."
-              }
-              checked={settings.watchHaptics}
-              onChange={() => toggle("watchHaptics")}
-            />
-            <SensoryToggle
-              label="Visual beat cues"
-              description="Short words like BASS, BUILD, CHORUS, DROP, plus a beat light."
-              checked={settings.cues}
-              onChange={() => toggle("cues")}
-            />
-          </section>
+            <section aria-label="Live settings" className="rounded-3xl border border-white/10 bg-surface p-3">
+              <SensoryToggle
+                label="Lightstick"
+                description="Your screen glows with the music."
+                checked={settings.lightstick}
+                onChange={() => toggle("lightstick")}
+              />
+              <SensoryToggle
+                label="Haptics"
+                description={
+                  phoneCanVibrate
+                    ? "Your phone vibrates on the beat and big moments (no Halo needed)."
+                    : "This browser can't vibrate — follow the light and cue words instead."
+                }
+                checked={settings.watchHaptics}
+                onChange={() => toggle("watchHaptics")}
+              />
+              <SensoryToggle
+                label="Visual beat cues"
+                description="Short words like BASS, BUILD, CHORUS, DROP, plus a beat light."
+                checked={settings.cues}
+                onChange={() => toggle("cues")}
+              />
+            </section>
 
-          <section aria-label="Accessibility" className="rounded-3xl border border-white/10 bg-surface p-3">
-            <p className="px-3 pt-1 text-sm text-ink-muted">Accessibility — shared with the At-home Concert.</p>
-            <SensoryToggle
-              label="Reduce Motion"
-              description="Steady light only: no flashes or spinning."
-              checked={shared.reducedMotion}
-              onChange={() => toggleShared("reducedMotion")}
-            />
-            <SensoryToggle
-              label="High Contrast"
-              description="Brighter text and stronger outlines."
-              checked={shared.highContrast}
-              onChange={() => toggleShared("highContrast")}
-            />
-          </section>
-        </div>
-
-        {lightstickOpen && session.active && (
-          <LiveLightstickView
-            mode={session.mode}
-            tone={session.tone}
-            flash={session.flash}
-            reducedMotion={reducedMotion}
-            status={statusLine}
-            cue={
-              settings.cues ? (
-                <LiveCueDisplay cue={session.lastCue} beats={session.beats} variant="stage" reducedMotion={reducedMotion} />
-              ) : undefined
-            }
-            onExit={closeLightstick}
-            onStop={stop}
-          />
-        )}
+            <section aria-label="Accessibility" className="rounded-3xl border border-white/10 bg-surface p-3">
+              <p className="px-3 pt-1 text-sm text-ink-muted">Accessibility — shared with the At-home Concert.</p>
+              <SensoryToggle
+                label="Reduce Motion"
+                description="Steady light only: no flashes or spinning."
+                checked={shared.reducedMotion}
+                onChange={() => toggleShared("reducedMotion")}
+              />
+              <SensoryToggle
+                label="High Contrast"
+                description="Brighter text and stronger outlines."
+                checked={shared.highContrast}
+                onChange={() => toggleShared("highContrast")}
+              />
+            </section>
+          </div>
+        </main>
       </div>
+
+      {showLightstick && (
+        <LiveLightstickView
+          mode={session.mode}
+          tone={session.tone}
+          flash={session.flash}
+          reducedMotion={reducedMotion}
+          status={statusLine}
+          cue={
+            settings.cues ? (
+              <LiveCueDisplay cue={session.lastCue} beats={session.beats} variant="stage" reducedMotion={reducedMotion} announce />
+            ) : undefined
+          }
+          onExit={closeLightstick}
+          onStop={stop}
+        />
+      )}
     </div>
   );
 }

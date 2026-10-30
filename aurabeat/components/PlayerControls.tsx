@@ -24,7 +24,7 @@ export default function PlayerControls({ time, duration, playing, onPlay, onPaus
       >
         <span aria-hidden="true">{playing ? "❚❚" : ended ? "↺" : "▶"}</span>
       </button>
-      <div className="flex flex-1 flex-col gap-1">
+      <div className="flex flex-1 flex-col">
         <input
           type="range"
           min={0}
@@ -34,9 +34,9 @@ export default function PlayerControls({ time, duration, playing, onPlay, onPaus
           onChange={(e) => onSeek(Number(e.target.value))}
           aria-label="Position in performance"
           aria-valuetext={`${formatTime(time)} of ${formatTime(duration)}`}
-          className="h-2 w-full cursor-pointer accent-aura"
+          className="h-11 w-full cursor-pointer accent-aura"
         />
-        <div className="flex justify-between text-xs text-ink-muted tabular-nums">
+        <div className="-mt-2 flex justify-between text-xs text-ink-muted tabular-nums">
           <span>{formatTime(time)}</span>
           <span>{formatTime(duration)}</span>
         </div>

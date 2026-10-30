@@ -96,7 +96,7 @@ export function parseLiveMessage(raw: unknown): LiveEvent | null {
       const id = typeof payload.cue_id === "string" ? payload.cue_id : undefined;
       return { type: "haptic", pattern: payload.pattern as LiveCueKind, strength: intensity ?? 0.5, id };
     }
-    const cue = msg.type === "cue" && typeof payload.kind === "string" && Object.hasOwn(HUB_CUES, payload.kind) ? HUB_CUES[payload.kind] : undefined;
+    const cue = msg.type === "cue" && typeof payload.kind === "string" && Object.prototype.hasOwnProperty.call(HUB_CUES, payload.kind) ? HUB_CUES[payload.kind] : undefined;
     if (!cue) return null;
     return { type: "cue", cue, strength: intensity, haptic: payload.pattern !== "none" };
   }

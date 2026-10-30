@@ -16,6 +16,8 @@ interface CinematicInteractionProps {
    * "inline": a block directly under the video (phones, where the video is too small to overlay).
    */
   variant: "overlay" | "inline";
+  /** Passed to the prompt: whether a wrist wearable is connected. */
+  wearable: boolean;
 }
 
 const PARTICLES = Array.from({ length: 16 }, (_, i) => {
@@ -55,6 +57,7 @@ export default memo(function CinematicInteraction({
   lit,
   reducedMotion,
   variant,
+  wearable,
 }: CinematicInteractionProps) {
   const state = celebrating ? "celebrate" : phase;
   const active = state !== "idle";
@@ -102,7 +105,7 @@ export default memo(function CinematicInteraction({
           <WaveLines side="right" />
         </>
       )}
-      <InteractionPrompt phase={phase} celebrating={celebrating} size={overlay ? "stage" : "compact"} />
+      <InteractionPrompt phase={phase} celebrating={celebrating} size={overlay ? "stage" : "compact"} wearable={wearable} />
     </div>
   );
 

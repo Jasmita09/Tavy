@@ -8,6 +8,8 @@ interface LiveCueDisplayProps {
   /** "card" on the controls screen, "stage" over the full-screen lightstick. */
   variant: "card" | "stage";
   reducedMotion: boolean;
+  /** Whether this copy announces cues to screen readers; only one copy on screen should. */
+  announce: boolean;
 }
 
 const LABEL: Record<LiveCueKind, { word: string; hint: string }> = {
@@ -22,9 +24,11 @@ const LABEL: Record<LiveCueKind, { word: string; hint: string }> = {
  * Short music cues for people who can't rely on hearing the music. Words, not colour alone,
  * and only what the live analysis reports — never invented captions.
  */
-export default function LiveCueDisplay({ cue, beats, variant, reducedMotion }: LiveCueDisplayProps) {
+export default function LiveCueDisplay({ cue, beats, variant, reducedMotion, announce }: LiveCueDisplayProps) {
   const label = cue ? LABEL[cue.kind] : null;
   const stage = variant === "stage";
+  // BASS repeats every bar, so only section changes are spoken; reading it out would never stop.
+  const spoken = cue && cue.kind !== "bass" && label ? `${label.word}: ${label.hint}` : "";
 
   return (
     <div className={stage ? "text-center" : "rounded-3xl border border-white/10 bg-surface p-5"}>
@@ -40,7 +44,12 @@ export default function LiveCueDisplay({ cue, beats, variant, reducedMotion }: L
           </span>
         </div>
       )}
-      <p aria-live="polite" className={stage ? "" : "mt-3 min-h-16"}>
+      {announce && (
+        <p aria-live="polite" className="sr-only">
+          {spoken}
+        </p>
+      )}
+      <p className={stage ? "" : "mt-3 min-h-16"}>
         {label ? (
           <span key={cue?.id} className={`block ${reducedMotion ? "" : "animate-live-cue"}`}>
             <span
