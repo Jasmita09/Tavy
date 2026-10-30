@@ -37,7 +37,7 @@ export const ExperienceShell: React.FC<ExperienceShellProps> = ({
   }, [title]);
 
   return (
-    <div className="min-h-screen bg-tv-canvas text-tv-navy flex flex-col overflow-x-hidden selection:bg-tv-violet/30">
+    <div className="min-h-screen bg-tv-canvas text-tv-navy flex flex-col overflow-x-hidden selection:bg-tv-accent/30">
       <header className="sticky top-0 z-50 border-b border-tv-line bg-tv-canvas/90 backdrop-blur-xl">
         <div className={`${CONTAINER} flex h-16 items-center justify-between gap-3`}>
           <button onClick={onBack} className={buttonClass('ghost')}>
@@ -45,7 +45,7 @@ export const ExperienceShell: React.FC<ExperienceShellProps> = ({
             <span>{backLabel}</span>
           </button>
           <span className="flex items-center gap-1.5 rounded-full border border-tv-line bg-tv-paper px-3 py-1 text-xs font-semibold text-tv-navy">
-            <FlaskConical className="w-3.5 h-3.5 text-tv-violet-ink" aria-hidden="true" />
+            <FlaskConical className="w-3.5 h-3.5 text-tv-accent-ink" aria-hidden="true" />
             Simulated demo
           </span>
         </div>

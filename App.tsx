@@ -85,7 +85,7 @@ const AppContent: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-tv-canvas text-tv-navy overflow-x-hidden selection:bg-tv-violet/30">
+    <div className="min-h-screen bg-tv-canvas text-tv-navy overflow-x-hidden selection:bg-tv-accent/30">
       <GlobalNavbar onEnterExperience={() => navigate('experience')} />
       <main>
         <HomePortal

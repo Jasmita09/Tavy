@@ -6,7 +6,7 @@ export type ButtonSize = 'md' | 'lg';
 
 const VARIANTS: Record<ButtonVariant, string> = {
   primary: `bg-tv-navy text-white hover:bg-tv-navy/90 shadow-tv-soft ${FOCUS_LIGHT}`,
-  accent: `bg-tv-violet-ink text-white hover:bg-tv-violet-ink/90 shadow-tv-soft ${FOCUS_LIGHT}`,
+  accent: `bg-tv-accent-ink text-white hover:bg-tv-accent-ink/90 shadow-tv-soft ${FOCUS_LIGHT}`,
   secondary: `border border-tv-line bg-tv-paper text-tv-navy hover:border-tv-navy/30 hover:bg-tv-mist/60 ${FOCUS_LIGHT}`,
   ghost: `text-tv-navy hover:bg-tv-mist ${FOCUS_LIGHT}`,
   'on-dark': `bg-white text-tv-navy hover:bg-tv-mist ${FOCUS_ON_DARK}`,

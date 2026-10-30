@@ -1,16 +1,15 @@
 import React, { useId, useState } from 'react';
-import { motion } from 'framer-motion';
-import { ArrowRight, AudioWaveform, Captions, Pause, Play, SlidersHorizontal, Vibrate } from 'lucide-react';
+import { ArrowRight, AudioWaveform, Captions, SlidersHorizontal, Vibrate } from 'lucide-react';
 import { useReducedMotionPreference } from '../hooks/useReducedMotionPreference';
 import { ConcertCarousel } from './experience/ConcertCarousel';
 import { concertModes } from './experience/concertModes';
 import { HaloViewer } from './halo/HaloViewer';
+import { GoldenHero } from './golden/GoldenHero';
 import { goToSection } from './GlobalNavbar';
 import { Button, buttonClass } from './ui/Button';
 import { Accent, SectionHeading } from './ui/SectionHeading';
 import { Reveal } from './ui/Reveal';
-import { CONTAINER, EYEBROW, FOCUS_LIGHT, FOCUS_ON_DARK, MOTION, SECTION_Y } from './ui/tokens';
-import heroImg from '../src/assets/images/web/hero-festival.jpg';
+import { CONTAINER, EYEBROW, FOCUS_LIGHT, SECTION_Y } from './ui/tokens';
 import stageLightsImg from '../src/assets/images/web/stage-lights.jpg';
 import liveCrowdImg from '../src/assets/images/web/live-crowd.jpg';
 
@@ -29,69 +28,6 @@ const ACCESS_FEATURES = [
   { icon: SlidersHorizontal, title: 'Personalize', body: 'Reduce Motion, High Contrast and sensory settings, shared by both modes.' },
 ];
 
-/* ---------- 1. Hero ---------- */
-const Hero: React.FC<{ reduced: boolean }> = ({ reduced }) => {
-  const [motionOn, setMotionOn] = useState(true);
-  const animate = motionOn && !reduced;
-  const enter = (delay: number) =>
-    reduced ? {} : { initial: { opacity: 0, y: 18 }, animate: { opacity: 1, y: 0 }, transition: { duration: MOTION.slow, ease: MOTION.ease, delay } };
-
-  return (
-    <section aria-labelledby="hero-title" className="pt-28 sm:pt-36">
-      <div className={CONTAINER}>
-        <div className="max-w-4xl">
-          <motion.h1
-            id="hero-title"
-            {...enter(0)}
-            className="text-[3.1rem] leading-[0.98] sm:text-7xl lg:text-[6.5rem] font-semibold tracking-[-0.045em] text-tv-navy text-balance"
-          >
-            Feel the music. <Accent>Together.</Accent>
-          </motion.h1>
-          <motion.p {...enter(0.08)} className="mt-6 max-w-xl text-lg sm:text-xl leading-relaxed text-tv-slate text-pretty">
-            Two concert experiences. One more inclusive way to feel music — for everyone.
-          </motion.p>
-          <motion.div {...enter(0.16)} className="mt-8 flex flex-wrap gap-3">
-            <Button size="lg" onClick={() => goToSection('experience')}>
-              Explore Experience
-              <ArrowRight className="w-4 h-4" aria-hidden="true" />
-            </Button>
-            <Button size="lg" variant="secondary" onClick={() => goToSection('accessibility')}>
-              Discover TΛVY
-            </Button>
-          </motion.div>
-        </div>
-      </div>
-
-      <motion.div {...enter(0.24)} className={`${CONTAINER} mt-12 sm:mt-16`}>
-        <div className="relative overflow-hidden rounded-tv-xl bg-tv-mist shadow-tv-lift">
-          <motion.img
-            src={heroImg}
-            alt="A festival crowd with hands raised toward a lit stage at sunset"
-            fetchPriority="high"
-            animate={animate ? { scale: [1.02, 1.08, 1.02] } : { scale: 1.02 }}
-            transition={animate ? { duration: 24, repeat: Infinity, ease: 'easeInOut' } : { duration: 0.6 }}
-            className="aspect-[4/5] sm:aspect-[21/9] w-full object-cover"
-          />
-          <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-tv-navy/40 via-transparent to-transparent" />
-          <p className="absolute bottom-5 left-5 sm:bottom-7 sm:left-8 max-w-xs text-sm font-medium text-white/90">
-            Live in the crowd, or at home on the sofa.
-          </p>
-          {!reduced && (
-            <button
-              onClick={() => setMotionOn((on) => !on)}
-              aria-pressed={!motionOn}
-              className={`absolute bottom-4 right-4 sm:bottom-6 sm:right-6 inline-flex size-11 items-center justify-center rounded-full bg-white/85 text-tv-navy backdrop-blur-md hover:bg-white cursor-pointer ${FOCUS_ON_DARK}`}
-            >
-              {motionOn ? <Pause className="w-4 h-4" aria-hidden="true" /> : <Play className="w-4 h-4" aria-hidden="true" />}
-              <span className="sr-only">Pause background motion</span>
-            </button>
-          )}
-        </div>
-      </motion.div>
-    </section>
-  );
-};
-
 /* ---------- 3. Accessibility: a static beat-cue illustration ---------- */
 const BeatCue: React.FC = () => (
   <figure className="relative m-0 overflow-hidden rounded-tv-xl bg-tv-navy p-8 sm:p-10 text-white">
@@ -100,10 +36,10 @@ const BeatCue: React.FC = () => (
         <span
           key={size}
           className="absolute rounded-full border"
-          style={{ width: `${size * 100}%`, height: `${size * 100}%`, borderColor: `rgb(141 114 232 / ${0.25 + i * 0.2})` }}
+          style={{ width: `${size * 100}%`, height: `${size * 100}%`, borderColor: `rgb(201 160 99 / ${0.25 + i * 0.2})` }}
         />
       ))}
-      <span className="absolute size-[34%] rounded-full bg-gradient-to-br from-tv-blush via-tv-violet to-tv-sky opacity-90" />
+      <span className="absolute size-[34%] rounded-full bg-gradient-to-br from-tv-blush via-tv-accent to-tv-peach opacity-90" />
       <span className="relative text-5xl sm:text-6xl font-black tracking-[0.08em]">DROP</span>
     </div>
     <figcaption className="mt-6 text-center text-sm text-white/75">A visual beat cue, as shown in Live Concert.</figcaption>
@@ -134,7 +70,7 @@ const MemoryArt: React.FC = () => (
 const ShareArt: React.FC = () => (
   <div aria-hidden="true" className="flex h-full items-center justify-center bg-tv-sky/50">
     <div className="flex -space-x-3">
-      {['bg-tv-blush', 'bg-tv-violet', 'bg-tv-peach', 'bg-tv-navy'].map((c) => (
+      {['bg-tv-blush', 'bg-tv-accent', 'bg-tv-peach', 'bg-tv-navy'].map((c) => (
         <span key={c} className={`size-14 rounded-full border-4 border-white ${c}`} />
       ))}
     </div>
@@ -159,7 +95,7 @@ export const HomePortal: React.FC<HomePortalProps> = ({
 
   return (
     <div className="w-full">
-      <Hero reduced={reduced} />
+      <GoldenHero reduced={reduced} onExplore={() => goToSection('experience')} onDiscover={() => goToSection('accessibility')} />
 
       {/* 2. The two concert experiences */}
       <section id="experience" aria-labelledby="experience-title" className={`${SECTION_Y} scroll-mt-16`}>
@@ -198,7 +134,7 @@ export const HomePortal: React.FC<HomePortalProps> = ({
             <ul className="grid gap-x-8 gap-y-7 sm:grid-cols-2">
               {ACCESS_FEATURES.map(({ icon: Icon, title, body }) => (
                 <li key={title} className="space-y-2 border-t border-tv-line pt-5">
-                  <Icon className="w-5 h-5 text-tv-violet-ink" aria-hidden="true" />
+                  <Icon className="w-5 h-5 text-tv-accent-ink" aria-hidden="true" />
                   <h3 className="font-semibold text-tv-navy">{title}</h3>
                   <p className="text-sm leading-relaxed text-tv-slate">{body}</p>
                 </li>
@@ -371,7 +307,7 @@ export const SiteFooter: React.FC<{
                 onChange={(e) => setNewsletterEmail(e.target.value)}
                 placeholder="you@example.com"
                 required
-                className="min-h-11 w-full rounded-full border border-tv-line bg-tv-paper px-4 text-sm text-tv-navy placeholder:text-tv-slate/70 focus:outline-none focus:ring-2 focus:ring-tv-violet-ink"
+                className="min-h-11 w-full rounded-full border border-tv-line bg-tv-paper px-4 text-sm text-tv-navy placeholder:text-tv-slate/70 focus:outline-none focus:ring-2 focus:ring-tv-accent-ink"
               />
               <Button type="submit">Subscribe</Button>
             </div>

@@ -6,7 +6,7 @@
 
 /** Keyboard focus indicator on light surfaces. */
 export const FOCUS_LIGHT =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tv-violet-ink focus-visible:ring-offset-2 focus-visible:ring-offset-tv-canvas';
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-tv-accent-ink focus-visible:ring-offset-2 focus-visible:ring-offset-tv-canvas';
 
 /** Keyboard focus indicator on dark photography or dark panels. */
 export const FOCUS_ON_DARK =
@@ -26,4 +26,4 @@ export const SECTION_Y = 'py-20 sm:py-28';
 
 /** Surfaces. */
 export const CARD = 'rounded-tv-lg border border-tv-line bg-tv-paper shadow-tv-soft';
-export const EYEBROW = 'text-xs font-semibold uppercase tracking-[0.22em] text-tv-violet-ink';
+export const EYEBROW = 'text-xs font-semibold uppercase tracking-[0.22em] text-tv-accent-ink';

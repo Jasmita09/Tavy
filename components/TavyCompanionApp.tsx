@@ -130,7 +130,7 @@ export const TavyCompanionApp: React.FC<TavyCompanionAppProps> = ({ onBackToWebs
 
         <div className="flex items-center gap-2.5">
           <span className="hidden sm:inline-flex items-center gap-2 px-3 py-1 rounded-full border border-tv-line bg-tv-paper text-xs font-semibold text-tv-navy">
-            <span className="w-2 h-2 rounded-full bg-tv-violet" aria-hidden="true" />
+            <span className="w-2 h-2 rounded-full bg-tv-accent" aria-hidden="true" />
             Interactive Companion App · Simulated Halo · Demo Data
           </span>
 
@@ -144,7 +144,7 @@ export const TavyCompanionApp: React.FC<TavyCompanionAppProps> = ({ onBackToWebs
       {/* Main Container - Responsive Phone Mockup on Desktop, Edge-to-Edge on Mobile */}
       <main className="w-full flex-1 flex flex-col items-center justify-center p-0 sm:p-6 md:p-8">
         {/* Subtle Ambient Glow behind Phone on Desktop */}
-        <div aria-hidden="true" className="hidden sm:block absolute top-1/4 w-[560px] max-w-full h-[560px] bg-tv-violet/15 rounded-full blur-[140px] pointer-events-none" />
+        <div aria-hidden="true" className="hidden sm:block absolute top-1/4 w-[560px] max-w-full h-[560px] bg-tv-accent/15 rounded-full blur-[140px] pointer-events-none" />
 
         {/* Smartphone Shell Frame */}
         <div className="relative w-full max-w-[420px] bg-[#0c0d14] sm:border-[8px] sm:border-stone-800 sm:rounded-[48px] sm:shadow-[0_40px_90px_-30px_rgba(23,21,46,0.55)] overflow-hidden flex flex-col min-h-screen sm:min-h-[780px] sm:max-h-[860px]">

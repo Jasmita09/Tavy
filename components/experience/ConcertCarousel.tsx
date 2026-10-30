@@ -214,7 +214,7 @@ export const ConcertCarousel: React.FC<ConcertCarouselProps> = ({ modes, titleAs
                   inert={!active}
                   className={`group relative h-full rounded-tv-lg overflow-hidden bg-tv-paper border border-tv-line flex flex-col transition-[box-shadow,transform] duration-300 motion-reduce:transition-none ${
                     active
-                      ? 'shadow-tv-lift hover:-translate-y-1 focus-within:ring-2 focus-within:ring-tv-violet-ink focus-within:ring-offset-2 focus-within:ring-offset-tv-canvas'
+                      ? 'shadow-tv-lift hover:-translate-y-1 focus-within:ring-2 focus-within:ring-tv-accent-ink focus-within:ring-offset-2 focus-within:ring-offset-tv-canvas'
                       : 'shadow-tv-soft'
                   }`}
                 >

@@ -189,7 +189,7 @@ export const HaloConceptDetails: React.FC<{ onOpenCompanionApp: () => void }> = 
                   setActiveHotspot(null);
                   setIsDetailModalOpen(true);
                 }}
-                className={`mt-3 rounded text-sm font-semibold text-tv-violet-ink hover:underline cursor-pointer ${FOCUS_LIGHT}`}
+                className={`mt-3 rounded text-sm font-semibold text-tv-accent-ink hover:underline cursor-pointer ${FOCUS_LIGHT}`}
               >
                 Inspect Exploded View →
               </button>
@@ -212,7 +212,7 @@ export const HaloConceptDetails: React.FC<{ onOpenCompanionApp: () => void }> = 
               <div key={note.title} className="space-y-2">
                 <dt className="font-semibold text-tv-navy">{note.title}</dt>
                 <dd className="text-sm leading-relaxed text-tv-slate">{note.body}</dd>
-                <dd className="text-xs font-medium text-tv-violet-ink">{note.target}</dd>
+                <dd className="text-xs font-medium text-tv-accent-ink">{note.target}</dd>
               </div>
             ))}
           </dl>
@@ -240,7 +240,7 @@ export const HaloConceptDetails: React.FC<{ onOpenCompanionApp: () => void }> = 
                         aria-pressed={activeCam === id}
                         onClick={() => setActiveCam(id)}
                         className={`min-h-10 rounded-xl border text-xs transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${
-                          activeCam === id ? 'border-tv-violet bg-tv-violet/25 font-bold text-white' : 'border-white/15 bg-white/5 text-white/75'
+                          activeCam === id ? 'border-tv-accent bg-tv-accent/25 font-bold text-white' : 'border-white/15 bg-white/5 text-white/75'
                         }`}
                       >
                         {label}
@@ -250,7 +250,7 @@ export const HaloConceptDetails: React.FC<{ onOpenCompanionApp: () => void }> = 
                 </div>
                 <div className="flex h-10 items-end justify-between gap-1 px-1" aria-hidden="true">
                   {[40, 70, 95, 60, 85, 100, 75, 90, 50, 80, 95, 65].map((h, i) => (
-                    <span key={i} className="flex-1 rounded-full bg-tv-violet" style={{ height: `${h}%`, opacity: 0.45 + h / 220 }} />
+                    <span key={i} className="flex-1 rounded-full bg-tv-accent" style={{ height: `${h}%`, opacity: 0.45 + h / 220 }} />
                   ))}
                 </div>
               </div>

@@ -26,14 +26,14 @@ export const HaloShowcase: React.FC<HaloShowcaseProps> = ({ onBack, onEnterExper
   const enter = reducedMotion ? false : { opacity: 0, y: 18 };
 
   return (
-    <div className="min-h-screen bg-tv-canvas text-tv-navy overflow-x-hidden selection:bg-tv-violet/30">
+    <div className="min-h-screen bg-tv-canvas text-tv-navy overflow-x-hidden selection:bg-tv-accent/30">
       <header className="sticky top-0 z-40 border-b border-tv-line bg-tv-canvas/90 backdrop-blur-xl">
         <div className={`${CONTAINER} flex h-16 items-center justify-between gap-3`}>
           <button onClick={onBack} className={buttonClass('ghost')}>
             <ArrowLeft className="w-4 h-4" aria-hidden="true" />
             Back to TΛVY Website
           </button>
-          <span className="rounded-full border border-tv-line bg-tv-paper px-3 py-1 text-xs font-semibold text-tv-violet-ink">
+          <span className="rounded-full border border-tv-line bg-tv-paper px-3 py-1 text-xs font-semibold text-tv-accent-ink">
             Concept model
           </span>
         </div>

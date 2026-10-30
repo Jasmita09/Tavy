@@ -116,13 +116,13 @@ export const HaloDetailModal: React.FC<HaloDetailModalProps> = ({
           <div className="p-6 pb-4 flex items-center justify-between border-b border-tv-line bg-white/70">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <span className="text-[11px] font-mono-tech tracking-wider uppercase text-tv-violet-ink font-semibold px-2.5 py-0.5 rounded-full bg-tv-mist border border-tv-line">
+                <span className="text-[11px] font-mono-tech tracking-wider uppercase text-tv-accent-ink font-semibold px-2.5 py-0.5 rounded-full bg-tv-mist border border-tv-line">
                   TECHNICAL ARCHITECTURE
                 </span>
                 <span className="text-xs text-tv-slate">· EXPLODED VIEW</span>
               </div>
               <h3 id="halo-architecture-title" className="text-xl sm:text-2xl font-bold tracking-tight text-tv-navy">
-                TΛVY <span className="font-serif italic text-tv-violet-ink font-normal">Halo</span> Architecture
+                TΛVY <span className="font-serif italic text-tv-accent-ink font-normal">Halo</span> Architecture
               </h3>
             </div>
 
@@ -183,7 +183,7 @@ export const HaloDetailModal: React.FC<HaloDetailModalProps> = ({
             <div className="p-5 sm:p-6 rounded-2xl bg-white border border-tv-line space-y-4 shadow-sm">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-tv-line pb-3">
                 <div>
-                  <span className="text-xs font-semibold text-tv-violet-ink uppercase tracking-wider">
+                  <span className="text-xs font-semibold text-tv-accent-ink uppercase tracking-wider">
                     {selectedPart.badge}
                   </span>
                   <h4 className="text-lg sm:text-xl font-bold text-tv-navy mt-0.5">

@@ -23,15 +23,15 @@
  * Companion App frame; the concert performance screens keep the darker --ab-* stage tokens above.
  */
 :root {
-  --tv-canvas: 250 249 253;       /* #FAF9FD warm off-white page */
-  --tv-paper: 255 255 255;        /* #FFFFFF raised surface */
-  --tv-mist: 242 238 250;         /* #F2EEFA subtle lavender surface */
+  --tv-canvas: 251 247 239;       /* #FBF7EF ivory page */
+  --tv-paper: 255 253 249;        /* #FFFDF9 raised surface */
+  --tv-mist: 245 237 224;         /* #F5EDE0 champagne mist surface */
   --tv-navy: 23 21 46;            /* #17152E primary text */
-  --tv-slate: 102 100 122;        /* #66647A secondary text */
-  --tv-line: 228 224 238;         /* hairlines and borders */
-  --tv-violet: 141 114 232;       /* #8D72E8 accent fills, large type only */
-  --tv-violet-ink: 91 67 196;     /* #5B43C4 accent for text, links and focus (AA on white) */
-  --tv-blush: 230 168 215;        /* #E6A8D7 */
+  --tv-slate: 110 100 90;         /* #6E645A secondary text (5.4:1 on ivory) */
+  --tv-line: 233 221 201;         /* #E9DDC9 hairlines and borders */
+  --tv-accent: 201 160 99;        /* #C9A063 champagne gold: fills and decoration only */
+  --tv-accent-ink: 133 87 15;     /* #85570F deep gold for text, links and focus (AA on ivory and white) */
+  --tv-blush: 235 196 192;        /* #EBC4C0 subtle blush */
   --tv-sky: 200 231 250;          /* #C8E7FA */
   --tv-peach: 246 201 173;        /* #F6C9AD warm concert accent */
   --tv-radius-sm: 12px;
@@ -45,8 +45,8 @@
 /* High Contrast preference (set on <html> by the concert settings) */
 html[data-contrast="high"] {
   --tv-slate: 23 21 46;
-  --tv-line: 110 106 132;
-  --tv-violet-ink: 64 40 160;
+  --tv-line: 128 114 96;
+  --tv-accent-ink: 96 60 5;
 }
 html[data-contrast="high"] {
   --ab-stage: 0 0 0;
