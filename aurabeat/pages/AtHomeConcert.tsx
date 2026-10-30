@@ -33,6 +33,8 @@ interface AtHomeConcertProps {
   onSwitchMode: () => void;
   /** TΛVY Memory Book: offered only while playback is stopped, after the performance has played. */
   onSaveMoment?: (moment: ConcertMoment) => void;
+  /** TΛVY Accessibility "Personalize": open the senses & accessibility settings on arrival. */
+  openSettings?: boolean;
 }
 
 /** Presentation only: how much each mood adds to the visible energy of the concert. */
@@ -82,12 +84,20 @@ const MISS_GRACE_S = 0.75;
  * here it comes from the on-screen Tap button (or a connected wearable), and is scored by how close
  * it lands to the beat.
  */
-export default function AtHomeConcert({ onExit, onSwitchMode, onSaveMoment }: AtHomeConcertProps) {
+export default function AtHomeConcert({ onExit, onSwitchMode, onSaveMoment, openSettings = false }: AtHomeConcertProps) {
   const { settings, toggle } = useSettings();
   const wearable = useWatchStatus() === "connected";
   const sensesId = useId();
   const tapHintId = useId();
-  const [sensesOpen, setSensesOpen] = useState(false);
+  const [sensesOpen, setSensesOpen] = useState(openSettings);
+  const sensesButtonRef = useRef<HTMLButtonElement>(null);
+  // Opened for its settings: bring them into view and put focus on their (expanded) toggle
+  useEffect(() => {
+    if (!openSettings) return;
+    sensesButtonRef.current?.scrollIntoView({ block: "center" });
+    sensesButtonRef.current?.focus({ preventScroll: true });
+    // Mount only
+  }, []);
   const [view, setView] = useState<PerformanceView>(initialView);
   const chooseView = (next: PerformanceView) => {
     setView(next);
@@ -543,6 +553,7 @@ export default function AtHomeConcert({ onExit, onSwitchMode, onSaveMoment }: At
             <div>
               <div className="flex flex-wrap items-center gap-3">
                 <button
+                  ref={sensesButtonRef}
                   type="button"
                   aria-expanded={sensesOpen}
                   aria-controls={sensesId}

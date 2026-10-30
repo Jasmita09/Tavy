@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft,
@@ -37,6 +37,7 @@ import {
 } from 'lucide-react';
 
 import { buttonClass } from './ui/Button';
+import { COMPANION_TAB_LABELS, DEFAULT_COMPANION_TAB, companionTabFromHash, companionTabHash, type CompanionTab } from './companionTabs';
 import cinematicStageImg from '../src/assets/images/tavy_cinematic_stage_1792350376076.jpg';
 import stageStreamImg from '../src/assets/images/concert_stage_stream_1792160451262.jpg';
 import biasCamImg from '../src/assets/images/bias_focus_cam_1792160467203.jpg';
@@ -45,13 +46,46 @@ import tavyHaloHeroImg from '../src/assets/images/tavy_halo_hero_1792275821098.j
 
 interface TavyCompanionAppProps {
   onBackToWebsite: () => void;
+  /** Label for the back button, e.g. "Back to Accessibility" when opened from that section. */
+  backLabel?: string;
   onEnterExperience: () => void;
   onOpenMemoryBook: () => void;
 }
 
-export const TavyCompanionApp: React.FC<TavyCompanionAppProps> = ({ onBackToWebsite, onEnterExperience, onOpenMemoryBook }) => {
-  // Navigation tabs: venue | stream | halo | history
-  const [activeTab, setActiveTab] = useState<'venue' | 'stream' | 'halo' | 'history'>('venue');
+export const TavyCompanionApp: React.FC<TavyCompanionAppProps> = ({
+  onBackToWebsite,
+  backLabel = 'Back to TΛVY Website',
+  onEnterExperience,
+  onOpenMemoryBook,
+}) => {
+  // Navigation tabs: venue | stream | halo | history. #/app/<tab> opens a tab directly (see companionTabs.ts).
+  const [activeTab, setActiveTab] = useState<CompanionTab>(() => companionTabFromHash(window.location.hash) ?? DEFAULT_COMPANION_TAB);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+
+  // Arriving (from a link, a reload or Back) puts keyboard and screen-reader focus on the app's heading
+  useEffect(() => {
+    headingRef.current?.focus({ preventScroll: true });
+  }, []);
+
+  // Follow the address when it changes while the app is open (Back/Forward, an edited link)
+  useEffect(() => {
+    const sync = () => {
+      if (window.location.hash.startsWith('#/app')) setActiveTab(companionTabFromHash(window.location.hash) ?? DEFAULT_COMPANION_TAB);
+    };
+    window.addEventListener('hashchange', sync);
+    window.addEventListener('popstate', sync);
+    return () => {
+      window.removeEventListener('hashchange', sync);
+      window.removeEventListener('popstate', sync);
+    };
+  }, []);
+
+  // Choosing a tab updates the address in place (no extra history entries), so a reload keeps the tab
+  const selectTab = (tab: CompanionTab) => {
+    setActiveTab(tab);
+    const hash = companionTabHash(tab);
+    if (window.location.hash !== hash) window.history.replaceState(window.history.state, '', `${window.location.pathname}${window.location.search}${hash}`);
+  };
 
   // Tab 1: Live Venue & Decibel States
   const [currentDecibel, setCurrentDecibel] = useState<number>(104.2);
@@ -126,7 +160,7 @@ export const TavyCompanionApp: React.FC<TavyCompanionAppProps> = ({ onBackToWebs
       <header className="w-full bg-tv-canvas/95 backdrop-blur-xl border-b border-tv-line px-3 sm:px-8 py-2.5 sticky top-0 z-50 flex items-center justify-between gap-2 text-tv-navy">
         <button onClick={onBackToWebsite} className={`${buttonClass('ghost')} px-3 sm:px-5`}>
           <ArrowLeft className="w-4 h-4" aria-hidden="true" />
-          <span>Back to TΛVY Website</span>
+          <span>{backLabel}</span>
         </button>
 
         <div className="flex items-center gap-2.5">
@@ -188,6 +222,9 @@ export const TavyCompanionApp: React.FC<TavyCompanionAppProps> = ({ onBackToWebs
 
           {/* App Content Body (Scrollable Screen) */}
           <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 pb-24 text-stone-100 scrollbar-none">
+            <h1 ref={headingRef} tabIndex={-1} className="sr-only">
+              TΛVY Companion App: {COMPANION_TAB_LABELS[activeTab]}
+            </h1>
             {/* Demo disclosure: nothing in this app reads a real device, microphone or location */}
             <p role="note" className="px-3 py-2 rounded-2xl bg-stone-900/80 border border-stone-800 text-[11px] leading-relaxed text-stone-300">
               <span className="font-bold text-amber-300">Demo mode.</span> Halo, Bluetooth, sound-level, friend-location and SOS data are simulated. Nothing here contacts emergency services or gives hearing-safety advice. In an emergency, tell venue staff or call your local emergency number.
@@ -727,47 +764,51 @@ export const TavyCompanionApp: React.FC<TavyCompanionAppProps> = ({ onBackToWebs
           </div>
 
           {/* App Bottom Navigation Bar (4 Native Tabs) */}
-          <div className="absolute bottom-0 inset-x-0 bg-[#10111a]/95 backdrop-blur-lg border-t border-stone-800/80 px-2 py-2 flex items-center justify-around z-20">
+          <nav aria-label="Companion App tabs" className="absolute bottom-0 inset-x-0 bg-[#10111a]/95 backdrop-blur-lg border-t border-stone-800/80 px-2 py-2 flex items-center justify-around z-20">
             <button
-              onClick={() => setActiveTab('venue')}
+              onClick={() => selectTab('venue')}
+              aria-current={activeTab === 'venue' ? 'page' : undefined}
               className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all cursor-pointer ${
                 activeTab === 'venue' ? 'text-amber-400 font-bold' : 'text-stone-400 hover:text-stone-200'
               }`}
             >
-              <Volume2 className="w-5 h-5" />
+              <Volume2 className="w-5 h-5" aria-hidden="true" />
               <span className="text-[10px]">Live Venue</span>
             </button>
 
             <button
-              onClick={() => setActiveTab('stream')}
+              onClick={() => selectTab('stream')}
+              aria-current={activeTab === 'stream' ? 'page' : undefined}
               className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all cursor-pointer ${
                 activeTab === 'stream' ? 'text-amber-400 font-bold' : 'text-stone-400 hover:text-stone-200'
               }`}
             >
-              <Camera className="w-5 h-5" />
+              <Camera className="w-5 h-5" aria-hidden="true" />
               <span className="text-[10px]">Stage Stream</span>
             </button>
 
             <button
-              onClick={() => setActiveTab('halo')}
+              onClick={() => selectTab('halo')}
+              aria-current={activeTab === 'halo' ? 'page' : undefined}
               className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all cursor-pointer ${
                 activeTab === 'halo' ? 'text-amber-400 font-bold' : 'text-stone-400 hover:text-stone-200'
               }`}
             >
-              <Sliders className="w-5 h-5" />
+              <Sliders className="w-5 h-5" aria-hidden="true" />
               <span className="text-[10px]">Halo Device</span>
             </button>
 
             <button
-              onClick={() => setActiveTab('history')}
+              onClick={() => selectTab('history')}
+              aria-current={activeTab === 'history' ? 'page' : undefined}
               className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all cursor-pointer ${
                 activeTab === 'history' ? 'text-amber-400 font-bold' : 'text-stone-400 hover:text-stone-200'
               }`}
             >
-              <Activity className="w-5 h-5" />
+              <Activity className="w-5 h-5" aria-hidden="true" />
               <span className="text-[10px]">Safety & Log</span>
             </button>
-          </div>
+          </nav>
         </div>
 
         {/* Full-Screen 110 dB Big Text Flashing Modal */}

@@ -3,6 +3,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { gateShape } from './gateShape';
+import { musicPulse } from '../audio/soundEngine';
 
 /**
  * The Golden Journey: one fixed, full-window, click-through canvas behind the landing content.
@@ -111,6 +112,7 @@ function Journey({ layout, playing, still }: SceneProps) {
   const clock = useRef(0);
   const progress = useRef(still ? 0 : layout.current.progress);
   const builtVersion = useRef(-1);
+  const keyLight = useRef<THREE.DirectionalLight>(null);
 
   const mats = useMemo(
     () => ({
@@ -241,6 +243,10 @@ function Journey({ layout, playing, still }: SceneProps) {
     }
     if (playing) clock.current += Math.min(delta, 1 / 20);
     const t = clock.current;
+    // Music (only when the user has turned sound on): a soft swell on each beat. 0 otherwise, so the
+    // scene is exactly as before; never with motion paused or reduced.
+    const beat = playing ? musicPulse() : 0;
+    if (keyLight.current) keyLight.current.intensity = 2.4 + beat * 0.9;
 
     // Narrative progress, eased so wheel steps glide; anchors stay pinned to the page exactly.
     const target = still ? 0 : L.progress;
@@ -254,8 +260,8 @@ function Journey({ layout, playing, still }: SceneProps) {
     const [ax, ay] = toWorld(L, L.art.x + L.art.w / 2, L.art.y + L.art.h / 2);
     const s = silkGroup.current;
     if (s) {
-      s.position.set(ax, ay + Math.sin(t * 0.34) * 4, 0);
-      s.scale.setScalar(u);
+      s.position.set(ax, ay + Math.sin(t * 0.34) * 4 + beat * 3, 0);
+      s.scale.setScalar(u * (1 + beat * 0.02));
       s.rotation.y = Math.sin(t * 0.19) * 0.13 + P * 0.25;
     }
 
@@ -336,7 +342,7 @@ function Journey({ layout, playing, still }: SceneProps) {
       wy += off.y + bob;
 
       g.position.set(wx, wy, 20 * n.depth);
-      g.scale.setScalar(size);
+      g.scale.setScalar(size * (1 + beat * 0.07));
       g.rotation.y = Math.sin(t * 0.37 + n.phase) * 0.22 + Math.sin(tt * Math.PI) * 0.6;
       g.rotation.z = Math.sin(t * 0.25 + n.phase) * 0.08;
 
@@ -399,7 +405,7 @@ function Journey({ layout, playing, still }: SceneProps) {
     <>
       <StudioEnvironment />
       <ambientLight intensity={0.5} color="#fff4e2" />
-      <directionalLight position={[2.5, 5, 5]} intensity={2.4} color="#fff1d2" />
+      <directionalLight ref={keyLight} position={[2.5, 5, 5]} intensity={2.4} color="#fff1d2" />
       <directionalLight position={[-4, 2, -3]} intensity={1.4} color={BLUSH} />
 
       {/* Golden silk */}

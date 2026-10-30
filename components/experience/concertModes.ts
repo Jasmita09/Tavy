@@ -2,6 +2,7 @@ import { createElement } from 'react';
 import { Home, Ticket } from 'lucide-react';
 import { HomeWorld, LiveWorld } from '../worlds/ConcertWorlds';
 import type { ConcertMode } from './ConcertCarousel';
+import { PreviewButton } from '../audio/SoundControls';
 import liveCrowdImg from '../../src/assets/images/web/live-crowd.jpg';
 import homePerformerImg from '../../src/assets/images/web/home-performer.jpg';
 
@@ -20,6 +21,7 @@ export const concertModes = (onSelectLive: () => void, onSelectHome: () => void)
     icon: Ticket,
     scene: 'live',
     highlights: ['Phone lightstick', 'Visual beat cues', 'BASS · BUILD · CHORUS · DROP', 'Optional haptics'],
+    preview: createElement(PreviewButton, { kind: 'live', label: 'Live Concert' }),
     onSelect: onSelectLive,
   },
   {
@@ -32,6 +34,7 @@ export const concertModes = (onSelectLive: () => void, onSelectHome: () => void)
     icon: Home,
     scene: 'home',
     highlights: ['Concert video', 'Synced lyrics', 'Virtual stage', 'Tap to Wave', 'Timing score'],
+    preview: createElement(PreviewButton, { kind: 'home', label: 'At-home Concert' }),
     onSelect: onSelectHome,
   },
 ];

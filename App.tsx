@@ -10,8 +10,11 @@ import { HomePortal, SiteFooter } from './components/HomePortal';
 import { TavyCompanionApp } from './components/TavyCompanionApp';
 import { ExperienceSelect } from './components/experience/ExperienceSelect';
 import { ConcertErrorBoundary } from './components/experience/ConcertErrorBoundary';
-import { useAppView } from './hooks/useAppView';
+import { useAppView, type AppView } from './hooks/useAppView';
 import { momentPrefill, type MemoryPrefill } from './components/memory/moment';
+import { companionTabSlug } from './components/companionTabs';
+import { stopAll } from './components/audio/soundEngine';
+import type { ToolTarget } from './components/home/CompanionTools';
 
 // The concert modes (ported from AuraBeat) load on demand so the landing page stays light.
 const LiveConcert = lazy(() => import('./aurabeat/pages/LiveConcert'));
@@ -35,11 +38,43 @@ const AppContent: React.FC = () => {
     if (view !== 'memory-book') setMoment(null);
   }, [view]);
 
+  // The Golden Symphony's music belongs to the landing page: leaving it (for a concert, the Companion
+  // App, anything) silences it at once, so it never plays over a concert's own sound.
+  useEffect(() => {
+    if (view !== 'website') stopAll();
+  }, [view]);
+
+  // A tool opened from the Accessibility section: remember the link used, so coming back (the back
+  // button or browser Back) returns to that link instead of the top of the page.
+  const [returnTo, setReturnTo] = useState<{ via: AppView; originId: string } | null>(null);
+  const [openSettings, setOpenSettings] = useState(false);
+  const openTool = (target: ToolTarget, originId: string) => {
+    setReturnTo({ via: target.view, originId });
+    setOpenSettings(target.view === 'at-home' && !!target.settings);
+    navigate(target.view, target.view === 'companion-app' && target.tab ? companionTabSlug(target.tab) : undefined);
+  };
+  useEffect(() => {
+    if (view !== 'at-home') setOpenSettings(false);
+    if (!returnTo || view === returnTo.via) return;
+    setReturnTo(null);
+    if (view !== 'website') return;
+    // After the landing page has rendered: bring the link back into view and focus it
+    requestAnimationFrame(() => {
+      const origin = document.getElementById(returnTo.originId);
+      origin?.scrollIntoView({ block: 'center' });
+      origin?.focus({ preventScroll: true });
+    });
+    // Only a view change should run this
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [view]);
+  const fromAccessibility = returnTo?.via === view;
+
   // If in companion app view, render interactive mobile simulation
   if (view === 'companion-app') {
     return (
       <TavyCompanionApp
         onBackToWebsite={() => navigate('website')}
+        backLabel={fromAccessibility ? 'Back to Accessibility' : undefined}
         onEnterExperience={() => navigate('experience')}
         onOpenMemoryBook={() => navigate('memory-book')}
       />
@@ -114,6 +149,7 @@ const AppContent: React.FC = () => {
             onExit={() => navigate('experience')}
             onSwitchMode={() => navigate('live-venue')}
             onSaveMoment={saveMoment}
+            openSettings={openSettings}
           />
         </Suspense>
       </ConcertErrorBoundary>
@@ -122,7 +158,7 @@ const AppContent: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-tv-canvas text-tv-navy overflow-x-hidden selection:bg-tv-accent/30">
-      <GlobalNavbar onEnterExperience={() => navigate('experience')} />
+      <GlobalNavbar onEnterExperience={() => navigate('experience')} onOpenCompanionApp={() => navigate('companion-app')} />
       <main>
         <HomePortal
           onEnterExperience={() => navigate('experience')}
@@ -131,6 +167,7 @@ const AppContent: React.FC = () => {
           onOpenHaloShowcase={() => navigate('halo')}
           onOpenCompanionApp={() => navigate('companion-app')}
           onOpenMemoryBook={() => navigate('memory-book')}
+          onOpenTool={openTool}
         />
       </main>
       <SiteFooter

@@ -1,4 +1,4 @@
-import React, { useCallback, useId, useRef, useState } from 'react';
+import React, { lazy, Suspense, useCallback, useEffect, useId, useRef, useState } from 'react';
 import { ArrowRight, AudioWaveform, Captions, SlidersHorizontal, Vibrate } from 'lucide-react';
 import { useReducedMotionPreference } from '../hooks/useReducedMotionPreference';
 import { ConcertCarousel } from './experience/ConcertCarousel';
@@ -11,6 +11,8 @@ import { MotionToggle } from './golden/MotionToggle';
 import { GoldenWaves, HaloSilhouette } from './golden/HaloAssembly';
 import { useScrollProgress } from './golden/useScrollProgress';
 import { FeelTheInvisible } from './feel/FeelTheInvisible';
+import { gateProgress } from './audio/soundEngine';
+import { CompanionTools, type ToolTarget } from './home/CompanionTools';
 import { goToSection } from './GlobalNavbar';
 import { Button, buttonClass } from './ui/Button';
 import { Accent, SectionHeading } from './ui/SectionHeading';
@@ -26,7 +28,12 @@ interface HomePortalProps {
   onOpenHaloShowcase: () => void;
   onOpenCompanionApp: () => void;
   onOpenMemoryBook: () => void;
+  /** A tool card in the Accessibility section was chosen (see CompanionTools). */
+  onOpenTool: (target: ToolTarget, originId: string) => void;
 }
+
+// The story is optional, so its scenes load only when someone chooses to watch.
+const StoryPlayer = lazy(() => import('./story/StoryPlayer'));
 
 const ACCESS_FEATURES = [
   { icon: AudioWaveform, title: 'Visual Beats', body: 'See the beat as light, with cue words like BASS and DROP.' },
@@ -79,6 +86,7 @@ export const HomePortal: React.FC<HomePortalProps> = ({
   onOpenHaloShowcase,
   onOpenCompanionApp,
   onOpenMemoryBook,
+  onOpenTool,
 }) => {
   const reduced = useReducedMotionPreference();
   const haloConceptId = useId();
@@ -94,6 +102,14 @@ export const HomePortal: React.FC<HomePortalProps> = ({
   const haloRef = useRef<HTMLElement>(null);
   const haloViewerRef = useRef<HTMLDivElement>(null);
   const [assembled, setAssembled] = useState(false);
+  const [storyOpen, setStoryOpen] = useState(false);
+  // Without WebGL there's no scroll journey: the gate's shimmer follows the concert cards coming into view
+  useEffect(() => {
+    if (use3d || !gateRef.current || typeof IntersectionObserver === 'undefined') return;
+    const io = new IntersectionObserver(([e]) => gateProgress(e.intersectionRatio > 0.6 ? 1 : e.isIntersecting ? 0.7 : 0), { threshold: [0, 0.6, 1] });
+    io.observe(gateRef.current);
+    return () => io.disconnect();
+  }, [use3d]);
   useScrollProgress(haloRef, haloRef, haloViewerRef, { name: '--halo-p', endLine: 0.6, still: reduced || !use3d });
 
   return (
@@ -104,7 +120,8 @@ export const HomePortal: React.FC<HomePortalProps> = ({
           artRef={artRef}
           gateRef={gateRef}
           endRef={experienceRef}
-          motionOn={motionOn}
+          // The story covers the page, so the journey behind it rests while it's open
+          motionOn={motionOn && !storyOpen}
           reduced={reduced}
           onUnavailable={() => setUse3d(false)}
         />
@@ -119,7 +136,13 @@ export const HomePortal: React.FC<HomePortalProps> = ({
           artRef={artRef}
           onExplore={() => goToSection('experience')}
           onDiscover={() => goToSection('accessibility')}
+          onWatchStory={() => setStoryOpen(true)}
         />
+        {storyOpen && (
+          <Suspense fallback={null}>
+            <StoryPlayer onClose={() => setStoryOpen(false)} onTryAtHome={onSelectAtHome} />
+          </Suspense>
+        )}
       </div>
 
       {/* 2. The two concert experiences, revealed by the golden gate */}
@@ -185,6 +208,9 @@ export const HomePortal: React.FC<HomePortalProps> = ({
           <Reveal delay={0.1}>
             <FeelTheInvisible reduced={reduced} motionOn={motionOn} onToggleMotion={toggleMotion} />
           </Reveal>
+        </div>
+        <div className={CONTAINER}>
+          <CompanionTools onOpen={onOpenTool} />
         </div>
       </section>
 

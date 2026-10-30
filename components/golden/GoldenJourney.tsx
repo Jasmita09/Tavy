@@ -1,6 +1,7 @@
 import React, { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import type { JourneyLayout } from './GoldenScene';
 import { gateCentre, gateShape } from './gateShape';
+import { gateProgress } from '../audio/soundEngine';
 
 // three.js loads in its own chunk after the hero text has painted.
 const GoldenScene = lazy(() => import('./GoldenScene'));
@@ -90,6 +91,8 @@ export const GoldenJourney: React.FC<GoldenJourneyProps> = ({ artRef, gateRef, e
     const onScroll = () => {
       L.scrollY = window.scrollY;
       L.progress = finish > 1 ? clamp(L.scrollY / finish) : 1;
+      // With the music on, arriving at the gate plays its shimmer once (see gateProgress)
+      gateProgress(L.progress);
       // Golden light behind the carousel (a CSS variable, so no React render)
       const light = reduced ? 1 : smooth(0.82, 1, L.progress);
       if (Math.abs(light - lastGate) > 0.01 || (light !== lastGate && (light === 0 || light === 1))) {

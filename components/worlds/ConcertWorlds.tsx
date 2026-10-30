@@ -1,5 +1,6 @@
 import React, { useEffect, useId, useRef, useState } from 'react';
 import { useReducedMotionPreference } from '../../hooks/useReducedMotionPreference';
+import { useSound } from '../audio/useSound';
 
 /**
  * The two concert worlds shown on the experience cards: hand-built SVG illustrations in one shared style
@@ -22,6 +23,9 @@ const C = {
   ivory: '#fbf7ef',
   cream: '#f3e9d8',
 };
+
+/** The worlds' palette, shared with the story illustrations (components/story). */
+export const WORLD_COLORS = C;
 
 /** Light level that follows the Golden Gate: from a dim stage to full light. */
 const lit = (min: number) => `calc(${min} + ${1 - min} * var(--gate-light, 1))`;
@@ -46,8 +50,10 @@ const crowd = (count: number, y: number, seed: number) =>
 const ROWS = [crowd(15, 262, 1), crowd(13, 286, 2)];
 
 /** Shared frame: play-for-a-moment policy, pointer parallax, reduced motion. */
-const WorldFrame: React.FC<{ label: string; children: (ids: (name: string) => string) => React.ReactNode }> = ({ label, children }) => {
+const WorldFrame: React.FC<{ label: string; kind: 'live' | 'home'; children: (ids: (name: string) => string) => React.ReactNode }> = ({ label, kind, children }) => {
   const reduced = useReducedMotionPreference();
+  // While this mode's sound Preview plays, the world performs along with it
+  const previewing = useSound().preview === kind && !reduced;
   const ref = useRef<HTMLDivElement>(null);
   const [playing, setPlaying] = useState(false);
   const hovering = useRef(false);
@@ -88,7 +94,7 @@ const WorldFrame: React.FC<{ label: string; children: (ids: (name: string) => st
       role="img"
       aria-label={label}
       data-world
-      data-playing={playing || undefined}
+      data-playing={playing || previewing || undefined}
       className={`tv-world h-full w-full ${reduced ? 'tv-world-still' : ''}`}
       onPointerEnter={(e) => {
         if (e.pointerType !== 'mouse') return;
@@ -205,7 +211,7 @@ const Lightstick: React.FC<{ x: number; y: number; gold: boolean; delay: number;
 );
 
 export const LiveWorld: React.FC = () => (
-  <WorldFrame label="Illustration: a concert stage with screens and spotlights, and a crowd raising glowing lightsticks">
+  <WorldFrame kind="live" label="Illustration: a concert stage with screens and spotlights, and a crowd raising glowing lightsticks">
     {(ids) => (
       <>
         <defs>
@@ -237,7 +243,7 @@ export const LiveWorld: React.FC = () => (
 );
 
 export const HomeWorld: React.FC = () => (
-  <WorldFrame label="Illustration: a cosy room in the evening, a concert playing on the screen, a fan on the sofa with a lightstick">
+  <WorldFrame kind="home" label="Illustration: a cosy room in the evening, a concert playing on the screen, a fan on the sofa with a lightstick">
     {(ids) => (
       <>
         <defs>
