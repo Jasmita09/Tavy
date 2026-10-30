@@ -7,6 +7,7 @@ import { CONTAINER, EYEBROW, FOCUS_LIGHT } from '../ui/tokens';
 import { Dialog } from './Dialog';
 import { MemoryEditor } from './MemoryEditor';
 import { Polaroid } from './Polaroid';
+import type { MemoryPrefill } from './moment';
 import {
   MemoryStoreError,
   deleteMemory,
@@ -56,9 +57,11 @@ const pageLabel = (page: number, count: number, memories: Memory[]) =>
 
 interface MemoryBookProps {
   onBack: () => void;
+  /** From a concert's "Save this moment": open the New memory form with these values. */
+  prefill?: MemoryPrefill | null;
 }
 
-export const MemoryBook: React.FC<MemoryBookProps> = ({ onBack }) => {
+export const MemoryBook: React.FC<MemoryBookProps> = ({ onBack, prefill }) => {
   const reduced = useReducedMotionPreference();
   const wide = useMediaQuery('(min-width: 768px)');
   const [status, setStatus] = useState<'loading' | 'ready' | 'unavailable'>('loading');
@@ -66,7 +69,9 @@ export const MemoryBook: React.FC<MemoryBookProps> = ({ onBack }) => {
   const [photos, setPhotos] = useState<Record<string, string>>({});
   const [page, setPage] = useState(-1);
   const [turn, setTurn] = useState<Turn | null>(null);
-  const [editing, setEditing] = useState<{ memory?: Memory } | null>(null);
+  const [editing, setEditing] = useState<{ memory?: Memory; prefill?: MemoryPrefill } | null>(null);
+  // The concert's moment is offered once, when the book first opens
+  const pendingPrefill = useRef(prefill ?? null);
   const [confirming, setConfirming] = useState<Memory | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [announce, setAnnounce] = useState('');
@@ -113,6 +118,18 @@ export const MemoryBook: React.FC<MemoryBookProps> = ({ onBack }) => {
   useEffect(() => {
     refresh();
   }, [refresh]);
+
+  useEffect(() => {
+    if (status !== 'ready' || !pendingPrefill.current) return;
+    setPage(0);
+    setEditing({ prefill: pendingPrefill.current });
+    pendingPrefill.current = null;
+  }, [status]);
+
+  const closeEditor = () => {
+    if (editing?.prefill) setAnnounce('Nothing was saved. Your Memory Book is unchanged.');
+    setEditing(null);
+  };
 
   const go = useCallback(
     (to: number) => {
@@ -427,8 +444,9 @@ export const MemoryBook: React.FC<MemoryBookProps> = ({ onBack }) => {
         <MemoryEditor
           memory={editing.memory}
           currentPhotoUrl={editing.memory?.photoId ? photos[editing.memory.photoId] : undefined}
+          prefill={editing.prefill}
           onSave={save}
-          onClose={() => setEditing(null)}
+          onClose={closeEditor}
         />
       )}
       {confirming && (

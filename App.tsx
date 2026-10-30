@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { MotionConfig } from 'framer-motion';
 import { GlobalNavbar } from './components/GlobalNavbar';
 import { HomePortal, SiteFooter } from './components/HomePortal';
@@ -11,6 +11,7 @@ import { TavyCompanionApp } from './components/TavyCompanionApp';
 import { ExperienceSelect } from './components/experience/ExperienceSelect';
 import { ConcertErrorBoundary } from './components/experience/ConcertErrorBoundary';
 import { useAppView } from './hooks/useAppView';
+import { momentPrefill, type MemoryPrefill } from './components/memory/moment';
 
 // The concert modes (ported from AuraBeat) load on demand so the landing page stays light.
 const LiveConcert = lazy(() => import('./aurabeat/pages/LiveConcert'));
@@ -24,6 +25,15 @@ const pageFallback = <div className="min-h-screen bg-tv-canvas" />;
 
 const AppContent: React.FC = () => {
   const { view, navigate } = useAppView();
+  // "Save this moment" from a concert: validated, held in memory only (a refresh drops it), used once.
+  const [moment, setMoment] = useState<MemoryPrefill | null>(null);
+  const saveMoment = (input: unknown) => {
+    setMoment(momentPrefill(input));
+    navigate('memory-book');
+  };
+  useEffect(() => {
+    if (view !== 'memory-book') setMoment(null);
+  }, [view]);
 
   // If in companion app view, render interactive mobile simulation
   if (view === 'companion-app') {
@@ -76,7 +86,7 @@ const AppContent: React.FC = () => {
         backLabel="Back to TΛVY Website"
       >
         <Suspense fallback={pageFallback}>
-          <MemoryBook onBack={() => navigate('website')} />
+          <MemoryBook prefill={moment} onBack={() => navigate('website')} />
         </Suspense>
       </ConcertErrorBoundary>
     );
@@ -86,7 +96,11 @@ const AppContent: React.FC = () => {
     return (
       <ConcertErrorBoundary key={view} onBack={() => navigate('experience')}>
         <Suspense fallback={concertFallback}>
-          <LiveConcert onExit={() => navigate('experience')} onSwitchMode={() => navigate('at-home')} />
+          <LiveConcert
+            onExit={() => navigate('experience')}
+            onSwitchMode={() => navigate('at-home')}
+            onSaveMoment={saveMoment}
+          />
         </Suspense>
       </ConcertErrorBoundary>
     );
@@ -96,7 +110,11 @@ const AppContent: React.FC = () => {
     return (
       <ConcertErrorBoundary key={view} onBack={() => navigate('experience')}>
         <Suspense fallback={concertFallback}>
-          <AtHomeConcert onExit={() => navigate('experience')} onSwitchMode={() => navigate('live-venue')} />
+          <AtHomeConcert
+            onExit={() => navigate('experience')}
+            onSwitchMode={() => navigate('live-venue')}
+            onSaveMoment={saveMoment}
+          />
         </Suspense>
       </ConcertErrorBoundary>
     );

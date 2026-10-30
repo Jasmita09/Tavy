@@ -4,28 +4,24 @@ import { Dialog } from './Dialog';
 import { Polaroid } from './Polaroid';
 import { buttonClass } from '../ui/Button';
 import { ACCEPTED_TYPES, MemoryStoreError, errorMessage, preparePhoto, type Memory, type MemoryDraft } from './memoryStore';
-
-const TITLE_MAX = 80;
-const NOTE_MAX = 600;
-
-const today = () => {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-};
+import { NOTE_MAX, TITLE_MAX, todayIso, type MemoryPrefill } from './moment';
 
 interface MemoryEditorProps {
   memory?: Memory;
   currentPhotoUrl?: string;
+  /** Starting values for a new memory (from "Save this moment"); ignored when editing. */
+  prefill?: MemoryPrefill;
   onSave: (draft: MemoryDraft) => Promise<void>;
   onClose: () => void;
 }
 
 const field = `w-full rounded-tv-sm border border-tv-line bg-white px-3.5 py-2.5 text-tv-navy placeholder:text-tv-slate/70 focus:outline-none focus:ring-2 focus:ring-tv-accent-ink`;
 
-export const MemoryEditor: React.FC<MemoryEditorProps> = ({ memory, currentPhotoUrl, onSave, onClose }) => {
-  const [title, setTitle] = useState(memory?.title ?? '');
-  const [date, setDate] = useState(memory?.date ?? today());
-  const [note, setNote] = useState(memory?.note ?? '');
+export const MemoryEditor: React.FC<MemoryEditorProps> = ({ memory, currentPhotoUrl, prefill, onSave, onClose }) => {
+  const start = memory ? undefined : prefill;
+  const [title, setTitle] = useState(memory?.title ?? start?.title ?? '');
+  const [date, setDate] = useState(memory?.date ?? start?.date ?? todayIso());
+  const [note, setNote] = useState(memory?.note ?? start?.note ?? '');
   /** undefined: keep the stored photo; null: remove it; Blob: the new photo. */
   const [photo, setPhoto] = useState<Blob | null | undefined>(undefined);
   const [preview, setPreview] = useState<string | undefined>(currentPhotoUrl);
@@ -35,7 +31,13 @@ export const MemoryEditor: React.FC<MemoryEditorProps> = ({ memory, currentPhoto
   const [saving, setSaving] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const titleRef = useRef<HTMLInputElement>(null);
-  const ids = { title: useId(), date: useId(), note: useId(), photo: useId(), noteCount: useId() };
+  const ids = { title: useId(), date: useId(), note: useId(), photo: useId(), noteCount: useId(), source: useId() };
+
+  // A suggested title is selected, so typing replaces it (runs after the dialog has focused the field)
+  useEffect(() => {
+    if (start) titleRef.current?.select();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Revoke preview URLs this dialog created
   useEffect(() => () => {
@@ -76,7 +78,13 @@ export const MemoryEditor: React.FC<MemoryEditorProps> = ({ memory, currentPhoto
 
   return (
     <Dialog title={memory ? 'Edit memory' : 'New memory'} busy={saving} onClose={onClose} initialFocus={titleRef}>
-      <form onSubmit={submit} noValidate className="space-y-5">
+      <form onSubmit={submit} noValidate aria-describedby={start ? ids.source : undefined} className="space-y-5">
+        {start && (
+          <p id={ids.source} className="rounded-tv-sm border border-tv-line bg-tv-mist/60 px-3.5 py-2.5 text-sm leading-relaxed text-tv-slate">
+            Started from your {start.source}. Change anything you like and add your own photo. Nothing is saved until you
+            press Save.
+          </p>
+        )}
         {/* Photo */}
         <div className="flex flex-col items-center gap-3 sm:flex-row sm:items-start sm:gap-5">
           <div className="w-40 shrink-0">
@@ -162,6 +170,11 @@ export const MemoryEditor: React.FC<MemoryEditorProps> = ({ memory, currentPhoto
             rows={4}
             aria-describedby={ids.noteCount}
             onChange={(e) => setNote(e.target.value)}
+            onFocus={(e) => {
+              // Tabbing into a suggested note puts the caret after it, so the user's words follow it
+              const el = e.currentTarget;
+              if (start && el.selectionStart === 0 && el.selectionEnd === 0) el.setSelectionRange(el.value.length, el.value.length);
+            }}
             placeholder="What did it feel like? Who were you with?"
             className={`${field} resize-y`}
           />
