@@ -25,9 +25,11 @@ export const goToSection = (id: string) => {
 
 interface GlobalNavbarProps {
   onEnterExperience: () => void;
+  /** The Companion App is its own page, so it sits after the section links. */
+  onOpenCompanionApp?: () => void;
 }
 
-export const GlobalNavbar: React.FC<GlobalNavbarProps> = ({ onEnterExperience }) => {
+export const GlobalNavbar: React.FC<GlobalNavbarProps> = ({ onEnterExperience, onOpenCompanionApp }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuId = useId();
@@ -83,6 +85,13 @@ export const GlobalNavbar: React.FC<GlobalNavbarProps> = ({ onEnterExperience })
                 </button>
               </li>
             ))}
+            {onOpenCompanionApp && (
+              <li>
+                <button onClick={onOpenCompanionApp} className={link}>
+                  Companion App
+                </button>
+              </li>
+            )}
           </ul>
         </nav>
 
@@ -118,6 +127,20 @@ export const GlobalNavbar: React.FC<GlobalNavbarProps> = ({ onEnterExperience })
                 </button>
               </li>
             ))}
+            {onOpenCompanionApp && (
+              <li>
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    onOpenCompanionApp();
+                  }}
+                  className={`flex min-h-12 w-full items-center justify-between rounded-lg text-left text-lg font-medium text-tv-navy cursor-pointer ${FOCUS_LIGHT}`}
+                >
+                  Companion App
+                  <ArrowRight className="w-4 h-4 text-tv-slate" aria-hidden="true" />
+                </button>
+              </li>
+            )}
           </ul>
           <button
             onClick={() => {

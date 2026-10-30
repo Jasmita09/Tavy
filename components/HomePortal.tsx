@@ -11,6 +11,7 @@ import { MotionToggle } from './golden/MotionToggle';
 import { GoldenWaves, HaloSilhouette } from './golden/HaloAssembly';
 import { useScrollProgress } from './golden/useScrollProgress';
 import { FeelTheInvisible } from './feel/FeelTheInvisible';
+import { CompanionTools, type ToolTarget } from './home/CompanionTools';
 import { goToSection } from './GlobalNavbar';
 import { Button, buttonClass } from './ui/Button';
 import { Accent, SectionHeading } from './ui/SectionHeading';
@@ -26,6 +27,8 @@ interface HomePortalProps {
   onOpenHaloShowcase: () => void;
   onOpenCompanionApp: () => void;
   onOpenMemoryBook: () => void;
+  /** A tool card in the Accessibility section was chosen (see CompanionTools). */
+  onOpenTool: (target: ToolTarget, originId: string) => void;
 }
 
 const ACCESS_FEATURES = [
@@ -79,6 +82,7 @@ export const HomePortal: React.FC<HomePortalProps> = ({
   onOpenHaloShowcase,
   onOpenCompanionApp,
   onOpenMemoryBook,
+  onOpenTool,
 }) => {
   const reduced = useReducedMotionPreference();
   const haloConceptId = useId();
@@ -185,6 +189,9 @@ export const HomePortal: React.FC<HomePortalProps> = ({
           <Reveal delay={0.1}>
             <FeelTheInvisible reduced={reduced} motionOn={motionOn} onToggleMotion={toggleMotion} />
           </Reveal>
+        </div>
+        <div className={CONTAINER}>
+          <CompanionTools onOpen={onOpenTool} />
         </div>
       </section>
 
